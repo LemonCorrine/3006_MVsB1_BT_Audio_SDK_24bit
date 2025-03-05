@@ -232,7 +232,7 @@ void TwsSlaveFifoMuteTimeSet(void)
 		APP_DBG("gTwsSlavePlayCt is NULL! %d\n",__LINE__);
 		return;
 	}
-	gTwsSlavePlayCt->TwsBufMuteTimeout = GetSysTick1MsCnt() + (TWS_STATRT_PLAY_FRAM * 128 * 1000 ) / CFG_PARA_SAMPLE_RATE;
+	gTwsSlavePlayCt->TwsBufMuteTimeout = GetSysTick1MsCnt() + (tws_delay * 128 * 1000 ) / CFG_PARA_SAMPLE_RATE;
 	gTwsSlavePlayCt->runflag = 1;
 	gTwsSlavePlayCt->umuteflag = 0;
 	TimeOutSet(&gTwsSlavePlayCt->umuteTime, 0xfffffff);//设一个近似无限值。
@@ -585,7 +585,7 @@ void TWS_Params_Init(void)
 
 	gTwsCfg.AudioMode    = TWS_M_L__S_R;
 	
-	tws_mem = tws_mem_size(TWS_STATRT_PLAY_FRAM,gTwsCfg.AudioMode);
+	tws_mem = tws_mem_size(TWS_FIFO_FRAMES,gTwsCfg.AudioMode);
 	p = (uint8_t*)osPortMalloc(tws_mem);
 	if(p == 0)
 	{
@@ -595,6 +595,7 @@ void TWS_Params_Init(void)
 	memset(p, 0, tws_mem);
 	printf("tws_mem_size:%lu\n",tws_mem);
 	tws_mem_set(p);
+	tws_delay_set(tws_delay);
 	gTwsCfg.PairMode    = 0;	
 	gTwsCfg.IsRemindSyncEn = 0;//0:提示音不发送给slave；1:提示音发送给slave同步播放提示音
 }

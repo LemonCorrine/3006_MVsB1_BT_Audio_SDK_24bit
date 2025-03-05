@@ -959,7 +959,7 @@ bool tws_state_audiocore_assort(TWS_SYNC_STATE State, TWS_SYNC_STATE LastState)
 			case TWS_HW_INIT:
 				if(AudioCoreSinkIsInit(TWS_SINK_NUM))
 				{
-					AudioCoreSinkDepthChange(TWS_SINK_NUM, TWS_STATRT_PLAY_FRAM * 128);
+					AudioCoreSinkDepthChange(TWS_SINK_NUM, TWS_FIFO_FRAMES * 128);
 				}
 				AudioCoreSourceUnmute(TWS_SOURCE_NUM, TRUE, TRUE);//for test
 				break;
@@ -981,6 +981,9 @@ bool tws_state_audiocore_assort(TWS_SYNC_STATE State, TWS_SYNC_STATE LastState)
 				}
 				SoftFlagDeregister(SoftFlagTwsRemind);
 #endif
+				if(IsAudioPlayerMute() == TRUE){
+					HardWareMuteOrUnMute();
+				}
 				break;
 
 			default:

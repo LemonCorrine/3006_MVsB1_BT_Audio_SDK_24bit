@@ -259,6 +259,9 @@ void UsbDevicePlayResInit(void)
 	{
 		AudioIOSet.SampleRate = CFG_PARA_SAMPLE_RATE;//≥ı º÷µ
 	}
+#ifdef CFG_AUDIO_OUT_AUTO_SAMPLE_RATE_44100_48000
+	AudioOutSampleRateSet(AudioIOSet.SampleRate);
+#endif
 #ifdef	CFG_AUDIO_WIDTH_24BIT
 	AudioIOSet.IOBitWidth = 0;//0,16bit,1:24bit
 #ifdef BT_TWS_SUPPORT
@@ -402,22 +405,16 @@ bool UsbDevicePlayInit(void)
 	OTG_DeviceInit();
 	NVIC_EnableIRQ(Usb_IRQn);
 	
-#ifdef CFG_FUNC_REMIND_SOUND_EN
+	#ifdef CFG_FUNC_REMIND_SOUND_EN
 	if(RemindSoundServiceItemRequest(SOUND_REMIND_SHENGKAM, REMIND_PRIO_NORMAL) == FALSE)
+	#endif
 	{
 		if(IsAudioPlayerMute() == TRUE)
 		{
 			HardWareMuteOrUnMute();
 		}
 	}
-#endif
 
-#ifndef CFG_FUNC_REMIND_SOUND_EN
-	if(IsAudioPlayerMute() == TRUE)
-	{
-		HardWareMuteOrUnMute();
-	}
-#endif
 	return TRUE;
 }
 

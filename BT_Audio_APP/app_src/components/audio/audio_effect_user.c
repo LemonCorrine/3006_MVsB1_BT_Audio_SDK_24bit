@@ -21,6 +21,7 @@ EQUnit 				*music_trebbass_eq_unit = NULL;//trab/bass
 #endif
 #ifdef CFG_FUNC_MUSIC_EQ_MODE_EN
 EQUnit 				*music_mode_eq_unit = NULL;//eq mode
+EQDRCUnit 			*music_mode_eq_drc_unit = NULL;//eq drc mode
 #endif
 #ifdef CFG_FUNC_MIC_AUTOTUNE_STEP_EN
 AutoTuneUnit 		*mic_autotune_unit = NULL;//
@@ -46,13 +47,21 @@ ReverbProUnit 		*mic_reverbpro_unit = NULL;
 // EQ 参数加载函数
 void LoadEqMode(const uint8_t *buff)
 {
-	if(music_mode_eq_unit == NULL)
-	{
+#ifndef MUSIC_EQ_DRC
+	if(music_mode_eq_unit == NULL){
 		return;
 	}
 	memcpy(&music_mode_eq_unit->param, buff, EQ_PARAM_LEN);
 	AudioEffectEQFilterConfig(music_mode_eq_unit, gCtrlVars.sample_rate);
 	gCtrlVars.AutoRefresh = 1;//////调音时模式发生改变，上位机会自动读取音效数据，1=允许上位读，0=不需要上位机读取
+#else
+	if(music_mode_eq_drc_unit == NULL){
+		return;
+	}
+	memcpy(&music_mode_eq_drc_unit->param, buff, EQDRC_PARAM_LEN);
+	AudioEffectEQDRCInit(music_mode_eq_drc_unit, 2, gCtrlVars.sample_rate);
+	gCtrlVars.AutoRefresh = 1;//////调音时模式发生改变，上位机会自动读取音效数据，1=允许上位读，0=不需要上位机读取
+#endif	
 }
 
 //EQ Mode调节函数
@@ -60,6 +69,7 @@ void EqModeSet(uint8_t EqMode)
 {
     switch(EqMode)
 	{
+#ifndef MUSIC_EQ_DRC
 		case EQ_MODE_FLAT:
 			LoadEqMode(&Flat[0]);
 			break;
@@ -78,6 +88,26 @@ void EqModeSet(uint8_t EqMode)
 		case EQ_MODE_VOCAL_BOOST:
 			LoadEqMode(&Vocal_Booster[0]);
 			break;
+#else
+		case EQ_MODE_FLAT:
+			LoadEqMode(&Flat_EQDRC[0]);
+			break;
+		case EQ_MODE_CLASSIC:
+			LoadEqMode(&Classical_EQDRC[0]);
+			break;
+		case EQ_MODE_POP:
+			LoadEqMode(&Pop_EQDRC[0]);
+			break;
+		case EQ_MODE_ROCK:
+			LoadEqMode(&Rock_EQDRC[0]);
+			break;
+		case EQ_MODE_JAZZ:
+			LoadEqMode(&Jazz_EQDRC[0]);
+			break;
+		case EQ_MODE_VOCAL_BOOST:
+			LoadEqMode(&Vocal_Booster_EQDRC[0]);
+			break;
+#endif
 		default:
 			break;
 	}
@@ -355,6 +385,7 @@ void AudioEffectUserNodeInit(void)
 #endif
 #ifdef CFG_FUNC_MUSIC_EQ_MODE_EN
 	music_mode_eq_unit = NULL;//eq mode
+	music_mode_eq_drc_unit = NULL;//eq mode
 #endif
 #ifdef CFG_FUNC_MIC_AUTOTUNE_STEP_EN
 	mic_autotune_unit = NULL;//

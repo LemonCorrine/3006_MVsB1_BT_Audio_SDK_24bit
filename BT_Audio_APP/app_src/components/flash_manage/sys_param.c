@@ -66,8 +66,10 @@ void sys_parameter_init(void)
 	}
 
 #ifdef BT_PROFILE_BQB_ENABLE
-	sys_parameter.bt_ReconnectionTryCounts = 2;
+	sys_parameter.bt_ReconnectionTryCounts = 0;
 	sys_parameter.bt_ReconnectionInternalTime = 2;
+
+	sys_parameter.bt_BBLostTryCounts = 1;
 #endif
 
 }

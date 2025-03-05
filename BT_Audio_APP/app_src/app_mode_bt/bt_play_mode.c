@@ -508,7 +508,10 @@ static void BtPlayRunning(uint16_t msgId)
 			if(((GetBtPlayState() == BT_PLAYER_STATE_PLAYING)
 				||(GetBtPlayState() == BT_PLAYER_STATE_FWD_SEEK)
 				||(GetBtPlayState() == BT_PLAYER_STATE_REV_SEEK))
-				&&(GetA2dpState(BtCurIndex_Get()) != BT_A2DP_STATE_CONNECTED))
+#ifndef BT_PROFILE_BQB_ENABLE
+				&&(GetA2dpState(BtCurIndex_Get()) != BT_A2DP_STATE_CONNECTED)
+#endif
+				)
 			{
 				//pause
 				BtStackServiceMsgSend(MSG_BTSTACK_MSG_BT_PAUSE);
@@ -647,27 +650,6 @@ static void BtPlayRunning(uint16_t msgId)
 			}
 			break;
 #endif
-#ifdef BT_PROFILE_BQB_ENABLE
-		case MSG_A2DP_CONNECT:
-			APP_DBG("MSG_A2DP_CONNECT\n");
-			A2dpConnect(0,btManager.btDdbLastAddr);
-		break;
-
-
-		case MSG_BT_BQB_AVDTP_SMG:
-		{
-			BTBqbAvdtpSmgSet(1);
-			APP_DBG("enable AVDTP/SNK/ACP/SIG/SMG/BI-05-C BI-33-C test\n");
-		}
-		break;
-
-		case MSG_BT_BQB_AVDTP_SMG_BI38C:
-		{
-			BTBqbAvdtpSmgBI38CSet(1);
-			APP_DBG("enable AVDTP/SNK/ACP/SIG/SMG/BI-38-C test\n");
-		}
-		break;
-#endif//BT_PROFILE_BQB_ENABLE
 		default:
 			CommonMsgProccess(msgId);
 			break;
@@ -681,7 +663,7 @@ bool BtPlayInit(void)
 {
 	bool		ret = TRUE;
 #ifdef BT_TWS_SUPPORT
-	tws_delay = BT_TWS_DELAY_DEFAULT;
+//	tws_delay = BT_TWS_DELAY_DEFAULT;
 #endif
 
 	//DMA channel
@@ -692,10 +674,21 @@ bool BtPlayInit(void)
 		return FALSE;
 	}
 
-	if(sys_parameter.bt_BackgroundType == BT_BACKGROUND_FAST_POWER_ON_OFF)
-		BtFastPowerOn();
-	else if(sys_parameter.bt_BackgroundType == BT_BACKGROUND_DISABLE)
+	if(sys_parameter.bt_BackgroundType == BT_BACKGROUND_DISABLE)
+	{
 		BtPowerOn();
+	}
+	else if (sys_parameter.bt_BackgroundType == BT_BACKGROUND_POWER_ON)
+	{
+		if((mainAppCt.SysPrevMode != ModeBtHfPlay)&&(mainAppCt.SysPrevMode != ModeTwsSlavePlay))
+		{
+			BtFastPowerOn();
+		}
+	}
+	else
+	{
+		BtFastPowerOn();
+	}
 	
 	ret = BtPlayInitRes();
 	APP_DBG("Bt Play mode\n");
@@ -718,14 +711,6 @@ bool BtPlayInit(void)
 
 	btManager.btTwsPairingStartDelayCnt = 0;
 	btManager.hfp_CallFalg = 0;
-
-#ifdef BT_TWS_SUPPORT
-	if(gBtTwsSniffLinkLoss)
-	{
-		tws_sync_reinit();
-		gBtTwsSniffLinkLoss= 0;
-	}
-#endif
 
 	if(SoftFlagGet(SoftFlagBtCurPlayStateMask))
 	{
@@ -806,10 +791,10 @@ bool BtPlayDeinit(void)
 	osMutexUnlock(SbcDecoderMutex);
 	
 	APP_DBG("!!BtPlayCt\n");
-	if(  sys_parameter.bt_BackgroundType == BT_BACKGROUND_FAST_POWER_ON_OFF
-	  || sys_parameter.bt_BackgroundType == BT_BACKGROUND_DISABLE	)
+
+	if(GetSysModeState(ModeBtHfPlay) != ModeStateInit && GetSysModeState(ModeTwsSlavePlay) != ModeStateInit)
 	{
-		if(GetSysModeState(ModeBtHfPlay) != ModeStateInit && GetSysModeState(ModeTwsSlavePlay) != ModeStateInit)
+		if( sys_parameter.bt_BackgroundType != BT_BACKGROUND_POWER_ON)
 		{
 			GetBtManager()->btReconnectDelayCount = 0;
 			
@@ -824,16 +809,27 @@ bool BtPlayDeinit(void)
 				if(i++ >= 200)
 					break;
 			}
+		}
 
-			if(sys_parameter.bt_BackgroundType == BT_BACKGROUND_FAST_POWER_ON_OFF)
-				BtFastPowerOff();
-			else
-				BtPowerOff();
+		if(sys_parameter.bt_BackgroundType == BT_BACKGROUND_DISABLE)
+		{
+			BtPowerOff();
+		}
+		else if (sys_parameter.bt_BackgroundType == BT_BACKGROUND_FAST_POWER_ON_OFF)
+		{
+			BtFastPowerOff();
 		}
 		else
 		{
-			BtStackServiceWaitResume();
+			#if (defined(BT_TWS_SUPPORT) && ((CFG_TWS_ONLY_IN_BT_MODE == ENABLE)))
+			BtReconnectTwsStop();
+			BtTwsDeviceDisconnectExt();
+			#endif
 		}
+	}
+	else if( sys_parameter.bt_BackgroundType != BT_BACKGROUND_POWER_ON)
+	{
+		BtStackServiceWaitResume();
 	}
 
 #ifdef CFG_FUNC_AUDIO_EFFECT_EN
@@ -849,7 +845,8 @@ bool BtPlayDeinit(void)
 #endif
 	osTaskDelay(10);// for printf 
 #ifdef BT_TWS_SUPPORT
-	tws_delay = BT_TWS_DELAY_DEINIT;
+//	tws_delay = BT_TWS_DELAY_DEINIT;
+//	tws_delay_set(tws_delay);
 #endif
 	return TRUE;
 }

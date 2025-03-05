@@ -38,9 +38,9 @@ typedef enum
 	BT_TWS_PLAY_START = 0x55,
 	BT_TWS_PLAY_IDLE = 0xFFFFFFFF,
 } BT_TWS_PLAY;
-#ifdef TWS_CODE_BACKUP
+//#ifdef TWS_CODE_BACKUP
 extern uint32_t g_tws_need_init;
-#endif
+//#endif
 extern BT_TWS_PLAY tws_play;
 
 

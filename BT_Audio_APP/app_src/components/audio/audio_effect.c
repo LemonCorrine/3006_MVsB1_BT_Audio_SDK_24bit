@@ -2244,13 +2244,14 @@ bool AudioEffectParsePackage(uint8_t* add, uint16_t PackageLen, uint8_t* CommPar
 								pNode->FuncAudioEffect = (AudioEffectApplyFunc)AudioEffectEQDRCApply;
 							}
 							AudioEffectNoteParamAssign(&pTemp->param, &add[Len+EFFECT_PARAM_OFFSET], effect_index, sizeof(EQDRCParam), IsReload);
+
 							//for user config
-					//	#ifdef CFG_FUNC_MUSIC_TREB_BASS_EN
-					//		if(EffectIndex == 0x92)//不为0xFF,也可以直接使用index编号为判断条件
-					//		{
-					//			music_trebbass_eq_unit = pTemp;//Treb/bass
-					//		}
-					//	#endif
+							#ifdef CFG_FUNC_MUSIC_EQ_MODE_EN
+							if(EffectIndex == 0x95)//不为0xFF,也可以直接使用index编号为判断条件
+							{
+								music_mode_eq_drc_unit = pTemp;
+							}
+							#endif
 						}
 					}
 					AudioEffectNoteParamBackup(&add[Len+EFFECT_PARAM_OFFSET], effect_index, sizeof(EQDRCParam), IsReload);
@@ -2452,9 +2453,9 @@ bool AudioEffectParsePackage(uint8_t* add, uint16_t PackageLen, uint8_t* CommPar
 					Len = Len + EFFECT_PARAM_OFFSET + sizeof(HowlingFineParam);
 					}
 					break;
+#if CFG_AUDIO_EFFECT_VIRTUAL_SURROUND_EN
 				case VIRTUAL_SURROUND:
 					{
-#if CFG_AUDIO_EFFECT_VIRTUAL_SURROUND_EN
 					VirtualSurroundUnit* pTemp = NULL;
 					if(pNode->Enable == TRUE)
 					{
@@ -2486,10 +2487,11 @@ bool AudioEffectParsePackage(uint8_t* add, uint16_t PackageLen, uint8_t* CommPar
 						}
 					}
 					AudioEffectNoteParamBackup(&add[Len+EFFECT_PARAM_OFFSET], effect_index, sizeof(VirtualSurroundParam), IsReload);
-#endif
+
 					Len = Len + EFFECT_PARAM_OFFSET + sizeof(VirtualSurroundParam);
 					}
 					break;
+#endif
 				case DynamicEQ:
 					{
 #if CFG_AUDIO_EFFECT_DYNAMIC_EQ
@@ -2540,8 +2542,8 @@ bool AudioEffectParsePackage(uint8_t* add, uint16_t PackageLen, uint8_t* CommPar
 					}
 					break;
 
-		           case Butterworth:
 #if CFG_AUDIO_EFFECT_BUTTERWORTH
+		           case Butterworth:
 		           {
 		        	ButterWorthUnit* pTemp = NULL;
 					if(pNode->Enable == TRUE)
@@ -2572,10 +2574,10 @@ bool AudioEffectParsePackage(uint8_t* add, uint16_t PackageLen, uint8_t* CommPar
 					}
 					AudioEffectNoteParamBackup(&add[Len+EFFECT_PARAM_OFFSET], effect_index, sizeof(ButterWorthParam), IsReload);
 		           }
-#endif
+
 					Len = Len + EFFECT_PARAM_OFFSET + sizeof(ButterWorthParam);
 			        break;
-
+#endif
 				default:
 					//DBG("other effect\n");
 					//Len += 1;

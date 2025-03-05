@@ -569,6 +569,9 @@ void SpdifPlayRun(uint16_t msgId)
 
 					SpdifPlayCt->SampleRate = samplerate;
 					APP_DBG("Get SampleRate: %d\n", (int)SpdifPlayCt->SampleRate);
+#ifdef CFG_AUDIO_OUT_AUTO_SAMPLE_RATE_44100_48000
+					AudioOutSampleRateSet(SpdifPlayCt->SampleRate);
+#endif
 					AudioCoreSourceChange(SPDIF_SOURCE_NUM, 2, SpdifPlayCt->SampleRate);
 				}
 

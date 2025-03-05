@@ -27,6 +27,7 @@ extern "C" {
 
 extern EQUnit			*music_trebbass_eq_unit;
 extern EQUnit 			*music_mode_eq_unit;
+extern EQDRCUnit 		*music_mode_eq_drc_unit;
 extern AutoTuneUnit 	*mic_autotune_unit;
 extern ChorusUnit	 	*mic_chorus_unit;
 extern EchoUnit 		*mic_echo_unit;

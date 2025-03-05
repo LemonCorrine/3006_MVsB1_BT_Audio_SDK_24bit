@@ -576,7 +576,10 @@ int32_t DecoderInit(void *io_handle, DecoderChannels DecoderChannel, int32_t ioT
 			{
 				return RT_FAILURE;//读取数据速度受限，屏蔽部分高码率歌曲。
 			}
-#endif			
+#endif
+#ifdef CFG_AUDIO_OUT_AUTO_SAMPLE_RATE_44100_48000
+		AudioOutSampleRateSet((int)gAudioDecoders[DecoderChannel]->song_info.sampling_rate);
+#endif
 #ifdef CFG_FUNC_MIXER_SRC_EN
 			if(DecoderChannel == DECODER_MODE_CHANNEL)
 			{

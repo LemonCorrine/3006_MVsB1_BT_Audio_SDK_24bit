@@ -40,8 +40,8 @@
 //#define  CFG_CHIP_BP1064A2	// flash容量 2M
 //#define  CFG_CHIP_BP1064L2	// flash容量 2M
 //#define  CFG_CHIP_BP1048A2	// flash容量 2M
-//#define  CFG_CHIP_BP1048B2   	// flash容量 2M
-#define  CFG_CHIP_BP1048B1   	// flash容量 1M  客户需自行把代码控制在 1M 以内
+#define  CFG_CHIP_BP1048B2   	// flash容量 2M
+//#define  CFG_CHIP_BP1048B1   	// flash容量 1M  客户需自行把代码控制在 1M 以内
 //#define  CFG_CHIP_MT166      	// flash容量 1M  客户需自行把代码控制在 1M 以内
 //#define  CFG_CHIP_BP1032A1   	// flash容量 1M  客户需自行把代码控制在 1M 以内
 //#define  CFG_CHIP_BP1032A2   	// flash容量 2M
@@ -57,7 +57,7 @@
 #define	 CFG_SDK_VER_CHIPID			(0xB1)
 #define  CFG_SDK_MAJOR_VERSION		(0)
 #define  CFG_SDK_MINOR_VERSION		(5)
-#define  CFG_SDK_PATCH_VERSION	    (1)
+#define  CFG_SDK_PATCH_VERSION	    (2)
 
 //****************************************************************************************
 //       B0,B1口作为DEBUG仿真功能选择配置
@@ -77,8 +77,8 @@
 //****************************************************************************************
 #define CFG_APP_IDLE_MODE_EN			//-------开关机模式--此模式不可关闭-//
 #define CFG_APP_BT_MODE_EN				//-------蓝牙功能-----------------//
-#define	CFG_APP_USB_PLAY_MODE_EN      	//-------UDisk播放模式------------//
-#define	CFG_APP_CARD_PLAY_MODE_EN		//-------SD Card播放模式----------//
+#define CFG_APP_USB_PLAY_MODE_EN		//-------UDisk播放模式------------//
+#define CFG_APP_CARD_PLAY_MODE_EN		//-------SD Card播放模式----------//
 #define CFG_APP_RADIOIN_MODE_EN			//-------收音机功能---------------//
 
 //****************************************************************************************
@@ -87,7 +87,7 @@
 // 		2.要是需要两路line in同时输入，另一路请选用MIC通路
 //		3.LINE IN MIX 默认经过系统音效处理
 //****************************************************************************************
-#define	CFG_APP_LINEIN_MODE_EN			//-------LINE输入模式-------------//
+#define CFG_APP_LINEIN_MODE_EN			//-------LINE输入模式-------------//
 //#define CFG_FUNC_LINE_MIX_MODE		//-------LINE混合输入功能----------//
 
 //****************************************************************************************
@@ -233,6 +233,7 @@
  */
 #define	USE_MCLK_IN_MODE					0
 
+//#define CFG_AUDIO_OUT_AUTO_SAMPLE_RATE_44100_48000
 //****************************************************************************************
 //     I2S相关配置选择
 //说明:
@@ -322,18 +323,22 @@
 //EQ模式功能配置说明:
 //    1.此功能是基于MUSIC EQ进行手动设置的，需要在调音参数中使能此EQ；
 //    2.可在flat/classic/pop/jazz/pop/vocal boost之间通过KEY来切换   
+//    3.如果需要切换EQ_DRC音效，请打开 MUSIC_EQ_DRC
 #define CFG_FUNC_AUDIO_EFFECT_EN //总音效使能开关
 #ifdef CFG_FUNC_AUDIO_EFFECT_EN
 
-    //#define CFG_FUNC_ECHO_DENOISE          //消除快速调节delay时的杂音，
- 	//#define CFG_FUNC_MUSIC_EQ_MODE_EN     //Music EQ模式功能配置
-	#ifdef CFG_FUNC_MUSIC_EQ_MODE_EN	    
- 		#define CFG_FUNC_EQMODE_FADIN_FADOUT_EN    //EQ模式切换时fade in/fade out处理功能选择,调节EQ模式中有POP声时，建议打开 		
+    //#define CFG_FUNC_ECHO_DENOISE					//消除快速调节delay时的杂音
+	//#define CFG_FUNC_MUSIC_EQ_MODE_EN				//Music EQ模式功能配置
+	#ifdef CFG_FUNC_MUSIC_EQ_MODE_EN
+	//	#define MUSIC_EQ_DRC  						//打开此宏EQ将调节EQ_DRC音效, 注意音效中要打开EQ_DRC音效
+		#define CFG_FUNC_EQMODE_FADIN_FADOUT_EN		//EQ模式切换时fade in/fade out处理功能选择,调节EQ模式中有POP声时，建议打开 		
     #endif
-	#define CFG_FUNC_MUSIC_TREB_BASS_EN    //Music高低音调节功能配置 
-    //#define CFG_FUNC_SILENCE_AUTO_POWER_OFF_EN     //无信号自动关机功能，
+
+	#define CFG_FUNC_MUSIC_TREB_BASS_EN				//Music高低音调节功能配置 
+
+    //#define CFG_FUNC_SILENCE_AUTO_POWER_OFF_EN	//无信号自动关机功能，
     #ifdef CFG_FUNC_SILENCE_AUTO_POWER_OFF_EN      
-		#define  SILENCE_THRESHOLD                 120        //设置信号检测门限，小于这个值认为无信号
+		#define  SILENCE_THRESHOLD                 120           //设置信号检测门限，小于这个值认为无信号
 		#define  SILENCE_POWER_OFF_DELAY_TIME      10*60*100     //无信号关机延时时间，单位：ms
     #endif
 
@@ -360,7 +365,7 @@
 		#define  CFG_COMMUNICATION_PASSWORD                     0x11223344//////四字节的长度密码
 	#endif
 
-	//使用flash存好的调音参数
+	//使用flash存好的调音参数，这个需要升级完整的MVA包，不能只下bin文件
 	//音效参数存储于flash固定区域中
 	//#define CFG_EFFECT_PARAM_IN_FLASH_EN
 	#ifdef CFG_EFFECT_PARAM_IN_FLASH_EN
@@ -486,7 +491,7 @@
 /**字符转换库由fatfs提供，故需要包含文件系统**/
 /**如果支持转换其他语言，需要修改fatfs配置表**/
 /**注意： 支持字库功能需要使用 flash容量>=2M的芯片**/
-
+/**开启此功能，请参考文档《24bit sdk中文字库使用说明.pdf》进行配置的修改 **/
 //#define CFG_FUNC_STRING_CONVERT_EN	// 支持字符编码转换
 
 /**取消AA55判断**/
@@ -570,7 +575,7 @@
 //                 UART DEBUG功能配置
 //注意：DEBUG打开后，会增大mic通路的delay，不需要DEBUG调试代码时，建议关闭掉！
 //****************************************************************************************
-#define CFG_FUNC_DEBUG_EN 
+#define CFG_FUNC_DEBUG_EN
 #ifdef CFG_FUNC_DEBUG_EN
 	//#define CFG_USE_SW_UART
 	#ifdef CFG_USE_SW_UART

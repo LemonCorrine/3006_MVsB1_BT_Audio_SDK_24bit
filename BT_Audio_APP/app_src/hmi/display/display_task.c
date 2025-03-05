@@ -54,9 +54,11 @@ void DisplayServiceCreate(void)
 void MsgSendToDisplayTask(uint16_t msgId)
 {
 	MessageContext msgSend;
-
-	msgSend.msgId = msgId;
-	MessageSend(DisplayTaskMsgHandle, &msgSend);
+	if (msgId != MSG_NONE)
+	{
+		msgSend.msgId = msgId;
+		MessageSend(DisplayTaskMsgHandle, &msgSend);
+	}
 }
 
 #endif

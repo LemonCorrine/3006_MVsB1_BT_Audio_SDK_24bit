@@ -255,6 +255,14 @@ static uint32_t BtRemoteDeviceConnecting_SinglePhoneAndTws(uint8_t *addr)
 			return BT_CON_REJECT;
 		}
 
+		#if (defined(BT_TWS_SUPPORT) && ((CFG_TWS_ONLY_IN_BT_MODE == ENABLE)))
+		if(!IsBtAudioMode())
+		{
+			APP_DBG("no bt mode, reject tws device\n");
+			return BT_CON_REJECT;
+		}
+		#endif
+
 		if((btManager.btLinkState == 1)
 			||(GetA2dpState(BtCurIndex_Get()) >= BT_A2DP_STATE_CONNECTED)
 			||(GetAvrcpState(BtCurIndex_Get()) >= BT_AVRCP_STATE_CONNECTED)

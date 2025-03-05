@@ -35,6 +35,7 @@
 #include "hdmi_in_api.h"
 #include "adc.h"
 #include "mode_task_api.h"
+#include "i2s.h"
 
 #ifdef CFG_IDLE_MODE_DEEP_SLEEP
 HDMIInfo  			 *gHdmiCt;
@@ -343,6 +344,99 @@ void WakeupSourceSet(void)
 }
 
 
+void ModeCommonDeInit_deepsleep(void)
+{
+#if defined(CFG_RES_AUDIO_DAC0_EN)
+	AudioDAC_Disable(DAC0);
+	AudioDAC_FuncReset(DAC0);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_AUDIO_DAC0_TX, DMA_DONE_INT);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_AUDIO_DAC0_TX, DMA_THRESHOLD_INT);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_AUDIO_DAC0_TX, DMA_ERROR_INT);
+	DMA_ChannelDisable(PERIPHERAL_ID_AUDIO_DAC0_TX);
+
+	if(mainAppCt.DACFIFO != NULL)
+	{
+		osPortFree(mainAppCt.DACFIFO);
+		mainAppCt.DACFIFO = NULL;
+	}
+	AudioCoreSinkDeinit(AUDIO_DAC0_SINK_NUM);
+	AudioDAC_PowerDown(DAC0);
+#endif
+
+#if defined(CFG_RES_AUDIO_DACX_EN)
+	AudioCoreSinkDisable(AUDIO_DACX_SINK_NUM);
+	AudioDAC_Disable(DAC1);
+	AudioDAC_FuncReset(DAC1);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_AUDIO_DAC1_TX, DMA_DONE_INT);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_AUDIO_DAC1_TX, DMA_THRESHOLD_INT);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_AUDIO_DAC1_TX, DMA_ERROR_INT);
+	DMA_ChannelDisable(PERIPHERAL_ID_AUDIO_DAC1_TX);
+
+	if(mainAppCt.DACXFIFO != NULL)
+	{
+		osPortFree(mainAppCt.DACXFIFO);
+		mainAppCt.DACXFIFO = NULL;
+	}
+	AudioCoreSinkDeinit(AUDIO_DACX_SINK_NUM);
+	AudioDAC_PowerDown(DAC1);
+#endif
+
+#if defined(CFG_RES_AUDIO_I2SOUT_EN)
+	I2S_ModuleDisable(CFG_RES_I2S_MODULE);
+	RST_I2SModule(CFG_RES_I2S_MODULE);
+
+	DMA_InterruptFlagClear(PERIPHERAL_ID_I2S0_TX + CFG_RES_I2S * 2, DMA_DONE_INT);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_I2S0_TX + CFG_RES_I2S * 2, DMA_THRESHOLD_INT);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_I2S0_TX + CFG_RES_I2S * 2, DMA_ERROR_INT);
+	DMA_ChannelDisable(PERIPHERAL_ID_I2S0_TX + CFG_RES_I2S * 2);
+
+	if(mainAppCt.I2SFIFO != NULL)
+	{
+		APP_DBG("I2SFIFO\n");
+		osPortFree(mainAppCt.I2SFIFO);
+		mainAppCt.I2SFIFO = NULL;
+	}
+	AudioCoreSinkDeinit(AUDIO_I2SOUT_SINK_NUM);
+#endif
+
+#if defined(CFG_RES_AUDIO_I2S0OUT_EN)
+	I2S_ModuleDisable(I2S0_MODULE);
+	RST_I2SModule(I2S0_MODULE);
+
+	DMA_InterruptFlagClear(PERIPHERAL_ID_I2S0_TX, DMA_DONE_INT);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_I2S0_TX, DMA_THRESHOLD_INT);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_I2S0_TX, DMA_ERROR_INT);
+	DMA_ChannelDisable(PERIPHERAL_ID_I2S0_TX);
+
+	if(mainAppCt.I2S0_TX_FIFO != NULL)
+	{
+		APP_DBG("I2S0_TX_FIFO\n");
+		osPortFree(mainAppCt.I2S0_TX_FIFO);
+		mainAppCt.I2S0_TX_FIFO = NULL;
+	}
+	AudioCoreSinkDeinit(AUDIO_I2S0_OUT_SINK_NUM);
+#endif
+
+#if defined(CFG_RES_AUDIO_I2S1OUT_EN)
+	I2S_ModuleDisable(I2S1_MODULE);
+	RST_I2SModule(I2S1_MODULE);
+
+	DMA_InterruptFlagClear(PERIPHERAL_ID_I2S1_TX, DMA_DONE_INT);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_I2S1_TX, DMA_THRESHOLD_INT);
+	DMA_InterruptFlagClear(PERIPHERAL_ID_I2S1_TX, DMA_ERROR_INT);
+	DMA_ChannelDisable(PERIPHERAL_ID_I2S1_TX);
+
+	if(mainAppCt.I2S1_TX_FIFO != NULL)
+	{
+		APP_DBG("I2S1_TX_FIFO\n");
+		osPortFree(mainAppCt.I2S1_TX_FIFO);
+		mainAppCt.I2S1_TX_FIFO = NULL;
+	}
+	AudioCoreSinkDeinit(AUDIO_I2S1_OUT_SINK_NUM);
+#endif
+}
+
+
 void DeepSleeping(void)
 {
 	uint32_t GpioAPU_Back,GpioAPD_Back,GpioBPU_Back,GpioBPD_Back;
@@ -356,15 +450,7 @@ void DeepSleeping(void)
 	//AudioADC_VcomConfig(2);//注意，VCOM会和DAC配置重叠。参数2，PowerDown VCOM
 	SPDIF_AnalogModuleDisable();//spdif,HDMI
 
-#ifdef CFG_RES_AUDIO_DAC0_EN
-	AudioCoreSinkDeinit(AUDIO_DAC0_SINK_NUM);
-	AudioDAC_PowerDown(DAC0);
-#endif
-
-#ifdef CFG_RES_AUDIO_DACX_EN
-	AudioCoreSinkDeinit(AUDIO_DACX_SINK_NUM);
-	AudioDAC_PowerDown(DAC1);
-#endif
+	ModeCommonDeInit_deepsleep();
 
 	GpioAPU_Back = GPIO_RegGet(GPIO_A_PU);
 	GpioAPD_Back = GPIO_RegGet(GPIO_A_PD);
@@ -853,9 +939,8 @@ void BtDeepSleepForUsr(void)//蓝牙休眠配置入口，目前没做处理
 	GIE_DISABLE();
 //	Clock_PllQuicklock(288000, K1, OS, NDAC, FC, SLOPE);
 #ifdef BT_TWS_SUPPORT
-   // Clock_PllLock(320000);
-	Clock_PllLock(316108);//11.2896*28=316.1088MHz
-	*(uint32_t*)0x40026008 = 0x27837B;
+	Clock_PllLock(SYS_CORE_DPLL_FREQ / 10);
+	*(uint32_t*)0x40026008 = ((uint64_t)8192 * SYS_CORE_DPLL_FREQ / 10000);  // 0x2BBF48--349M    0x27837B--316M
 #else
     Clock_PllLock(288000);
 #endif

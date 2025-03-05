@@ -798,25 +798,24 @@ void BtScanPageStateCheck(void)
 
 		case BT_SCAN_PAGE_STATE_OPENING:
 			APP_DBG("BT_SCAN_PAGE_STATE_OPENING\n");
-			BtScanPageStateSet(BT_SCAN_PAGE_STATE_ENABLE);
 
+			BtScanPageStateSet(BT_SCAN_PAGE_STATE_ENABLE);
 			btManager.BtPowerOnFlag = 0;
-#ifdef BT_TWS_SUPPORT
+			#ifdef BT_TWS_SUPPORT
 			btManager.TwsPowerOnFlag = 0;
-#endif
+			#endif
 
 #if ((CFG_TWS_ONLY_IN_BT_MODE == ENABLE) || defined(TWS_SLAVE_MODE_SWITCH_EN))
 		#if ((TWS_PAIRING_MODE == CFG_TWS_PEER_MASTER)||(TWS_PAIRING_MODE == CFG_TWS_ROLE_RANDOM))
 			if(sys_parameter.bt_TwsReconnectionEnable && btManager.twsFlag)
 			{
-				btManager.btConStateProtectCnt = 1;
-				if(btManager.twsRole == BT_TWS_SLAVE)
+				if (IsBtAudioMode())
 				{
-					BtReconnectTws_Slave();
-				}
-				else
-				{
-					BtReconnectTws();
+					btManager.btConStateProtectCnt = 1;
+					if(btManager.twsRole == BT_TWS_SLAVE)
+						BtReconnectTws_Slave();
+					else
+						BtReconnectTws();
 				}
 			}
 			if(sys_parameter.bt_ReconnectionEnable)

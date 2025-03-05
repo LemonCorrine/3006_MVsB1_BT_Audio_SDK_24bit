@@ -27,6 +27,16 @@
  *****************************************************************/
 #ifdef CFG_APP_BT_MODE_EN
 
+/*
+ * 		TWS芯片主频配置
+ * 说明：此值必须为11.2986的整数倍；且超频到360M必须用超频芯片，否则设置也无效
+ * 112896 * 28 =  3161088   316M
+ * 112896 * 31 =  3499776   349M
+ * 如果超频到360M，请配置为 3499776
+ * 如果需要关闭TWS，并把主频超频到360M，直接在void SystemClockInit(void)中把 Clock_PllLock(288000); 改为360000即可
+ */
+#define SYS_CORE_DPLL_FREQ			3161088  // 3499776
+
 //TWS开关
 #define BT_TWS_SUPPORT
 
@@ -141,7 +151,7 @@
 /*
  * AAC播放使能
  */
-//#define BT_AUDIO_AAC_ENABLE
+#define BT_AUDIO_AAC_ENABLE
 
 //BQB认证测试A2DP时,需要开启AAC,与AVP测试项相关
 #if defined(BT_PROFILE_BQB_ENABLE) && !defined(BT_AUDIO_AAC_ENABLE)
@@ -257,8 +267,9 @@
 
 #define BT_TWS_LINK_NUM				1		//TWS参数仅能为1， 不可修改
 #define CFG_TWS_ONLY_IN_BT_MODE		DISABLE //enable:仅在蓝牙模式下工作, disable:在所有模式下工作
-#define TWS_STATRT_PLAY_FRAM		56*2    //取值范围[56*1 - 56*4]; 对应music通路的delay时间是56*3*[1 - 4] = [168 - 672]ms；此值越大，主副箱距离越远
-#define CFG_CMD_DELAY				10      //ms 主从CMD发送到处理延时5ms左右，信道质量差时更长，考虑被打断会形成7~20mS延时，此处设10ms较合适。
+#define TWS_FIFO_FRAMES				120 	//@Framesize=128, 对应music通路的TWS缓冲深度帧数
+#define TWS_DELAY_FRAMES			56*2	//建议112，~325mS; music通路的delay时间 N*2.9mS@44100；此值越大，主副箱距离越远, 25 < TWS_DELAY_FRAMES < TWS_FIFO_FRAMES
+//#define CFG_CMD_DELAY				10      //ms 主从CMD发送到处理延时5ms左右，信道质量差时更长，考虑被打断会形成7~20mS延时，此处设10ms较合适。
 
 
 //TWS组网条件判断

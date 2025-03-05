@@ -99,9 +99,6 @@ void PcOnlineReadWriteAck(uint8_t cmd,uint8_t *buf,uint8_t len,uint8_t error)
 
 void FlashSn_Rx(uint8_t *buf,uint16_t buf_len)
 {
-	buf_len = buf[1];
-	buf_len <<= 8;
-	buf_len |= buf[2];
 
 	switch (buf[0])
 	{
@@ -151,7 +148,7 @@ void FlashSn_Rx(uint8_t *buf,uint16_t buf_len)
 		break;
 
 	case PC_ONLINE_READ_DATA:
-		if(buf_len == 6)
+		if(buf[1] == 6)
 		{
 			uint8_t *p_tx_buf = osPortMalloc(256);
 			uint32_t offset = buf[3]<<24 | buf[4]<<16 | buf[5]<<8 | buf[6];
@@ -172,7 +169,6 @@ void FlashSn_Rx(uint8_t *buf,uint16_t buf_len)
 			p_tx_buf[7] = buf[4];
 			p_tx_buf[8] = buf[5];
 			p_tx_buf[9] = buf[6];
-
 			if(offset == MAGIC_NUMBER_BT_ADDR || offset == MAGIC_NUMBER_BLE_ADDR)
 			{
 				p_tx_buf[10] = 0;
@@ -197,7 +193,6 @@ void FlashSn_Rx(uint8_t *buf,uint16_t buf_len)
 			else
 			{
 				extern char __data_lmastart;
-
 				if(offset < &__data_lmastart || len > (256-12))
 				{
 					osPortFree(p_tx_buf);
@@ -208,9 +203,8 @@ void FlashSn_Rx(uint8_t *buf,uint16_t buf_len)
 				p_tx_buf[11] = len;
 				memcpy(&p_tx_buf[12],offset,len);
 			}
-
 			p_tx_buf[5] += p_tx_buf[11];
-			Union_Effect_Send(p_tx_buf,p_tx_buf[5] + 4);
+			Union_Effect_Send(p_tx_buf,p_tx_buf[5] + 6);
 			osPortFree(p_tx_buf);
 		}
 		else
@@ -304,7 +298,6 @@ void FlashSn_Rx(uint8_t *buf,uint16_t buf_len)
 					PcOnlineReadWriteAck(PC_ONLINE_WRITE_ACK,buf,0,PC_ONLINE_MEMORY_ERROR);
 					break;
 				}
-
 				SpiFlashRead((offset/4096)*4096,p_buf,4096,10); //4K对齐读取数据
 				SpiFlashErase(SECTOR_ERASE, (offset/4096), 1);	//擦除BLOCK
 				//写入offset，相对4K对齐位置的偏移

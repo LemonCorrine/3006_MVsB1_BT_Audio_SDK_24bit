@@ -28,8 +28,16 @@ void AudioI2S_Init(I2S_MODULE Module, I2SParamCt *ct)
 	//tx
 	if(ct->I2sTxRxEnable & 0x1)
 	{
-		DMA_ChannelDisable(ct->TxPeripheralID);
-		DMA_CircularConfig(ct->TxPeripheralID, ct->TxLen/2, ct->TxBuf, ct->TxLen);
+        I2S_ModuleTxDisable(Module);
+        RST_I2SModule(Module);
+        DMA_InterruptFlagClear(ct->TxPeripheralID, DMA_DONE_INT);
+        DMA_InterruptFlagClear(ct->TxPeripheralID, DMA_THRESHOLD_INT);
+        DMA_InterruptFlagClear(ct->TxPeripheralID, DMA_ERROR_INT);
+        DMA_ChannelDisable(ct->TxPeripheralID);
+        DMA_CircularConfig(ct->TxPeripheralID, ct->TxLen/2, ct->TxBuf, ct->TxLen);
+        GIE_DISABLE();
+        DMA_CircularWritePtrSet(ct->TxPeripheralID, ct->TxLen/2);
+        GIE_ENABLE();
 	}
 
 	if(ct->I2sTxRxEnable & 0x2)
@@ -292,19 +300,21 @@ void AudioI2S_SampleRateChange(I2S_MODULE Module,uint32_t SampleRate)
 {
 	if(Module == I2S0_MODULE)
     {
-		if((SampleRate == 11025) || (SampleRate == 22050) || (SampleRate == 44100) || (SampleRate == 88200))
+		if((SampleRate == 11025) || (SampleRate == 22050) || (SampleRate == 44100)
+					|| (SampleRate == 88200) || (SampleRate == 176400))
 			Clock_AudioMclkSel(AUDIO_I2S0, PLL_CLK_SET1);
 		else
 			Clock_AudioMclkSel(AUDIO_I2S0, PLL_CLK_SET2);
     }
     else if(Module == I2S1_MODULE)
     {
-    	if((SampleRate == 11025) || (SampleRate == 22050) || (SampleRate == 44100) || (SampleRate == 88200))
+    	if((SampleRate == 11025) || (SampleRate == 22050) || (SampleRate == 44100)
+    				|| (SampleRate == 88200) || (SampleRate == 176400))
 			Clock_AudioMclkSel(AUDIO_I2S1, PLL_CLK_SET1);
 		else
 			Clock_AudioMclkSel(AUDIO_I2S1, PLL_CLK_SET2);
     }
 
-	I2S_SampleRateSet(Module, SampleRate);	
+	I2S_SampleRateSet(Module, SampleRate);
 }
 

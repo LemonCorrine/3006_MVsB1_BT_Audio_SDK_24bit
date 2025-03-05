@@ -81,12 +81,15 @@ const uint16_t EffectTypeParamCtLen[] =
 	sizeof(CompanderParam),//
 	sizeof(LLCompressorParam),//
 	sizeof(HowlingFineParam),//
-	//注意，用户自定义音效，参数往后增加
 };
 
 const uint16_t EffectTypeParam100CtLen[] =
 {
+#ifndef CFG_EFFECT_PARAM_UPDATA_BY_ACPWORKBENCH
 	sizeof(AECParam),//AEC = 100,////AEC,用户自定义音效，固定为100
+#else
+	sizeof(DynamicEqParam),
+#endif
 	//注意，用户自定义音效，参数往后增加
 };
 

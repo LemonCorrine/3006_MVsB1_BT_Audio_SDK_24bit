@@ -132,7 +132,7 @@ const unsigned char CommParam[1146]={
 0x64, 0x00,/*release*/
 
 0x89,/*2:Music Silence Detector*/
-0x00,//调音使能位
+0x00,
 0x00,0x00,/*amplitude*/
 
 0x8A,/*2:Music Compander*/

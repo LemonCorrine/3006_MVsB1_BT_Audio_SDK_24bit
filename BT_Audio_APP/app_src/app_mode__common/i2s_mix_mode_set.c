@@ -282,11 +282,9 @@ void I2s0MixModeAudioCoreInit(void)
 #ifdef CFG_RES_AUDIO_I2S0IN_EN
 	if(!AudioCoreSourceIsInit(I2S0_SOURCE_NUM))
 	{
-		AudioI2s0ParamsSet();
-
 		memset(&AudioIOSet, 0, sizeof(AudioCoreIO));
 
-#if (CFG_RES_I2S0_MIX_MODE == 0) || !defined(CFG_FUNC_I2S0IN_SRA_EN)//master 或者关微调
+#if (CFG_RES_I2S0_MIX_MODE == 0) || !defined(CFG_FUNC_I2S0IN_SRA_EN) || (USE_MCLK_IN_MODE != 0)//master 或者关微调
 		#if CFG_PARA_I2S0_SAMPLE == CFG_PARA_SAMPLE_RATE
 		AudioIOSet.Adapt = STD;
 		#else
@@ -299,7 +297,7 @@ void I2s0MixModeAudioCoreInit(void)
 		AudioIOSet.Adapt = SRC_SRA;//SRC_ADJUST;//
 		#endif
 #endif
-		AudioIOSet.Sync = (!CFG_RES_I2S0_MIX_MODE); //TRUE;//FALSE;//
+		AudioIOSet.Sync = TRUE;
 		AudioIOSet.Channels = 2;
 		AudioIOSet.Net = DefaultNet;
 		AudioIOSet.Depth = AudioCoreFrameSizeGet(DefaultNet) * 2;//sI2SInPlayCt->I2SFIFO1 采样点深度
@@ -322,8 +320,21 @@ void I2s0MixModeAudioCoreInit(void)
 			DBG("I2S0_SOURCE_NUM source error!\n");
 			return;
 		}
+
+		#ifdef CFG_RES_AUDIO_I2S0OUT_EN
+		if(AudioCoreSinkIsInit(AUDIO_I2S0_OUT_SINK_NUM))
+		#endif
+		{
+			AudioI2s0ParamsSet();
+			AudioCoreSourceEnable(I2S0_SOURCE_NUM);
+			AudioCoreSourceAdjust(I2S0_SOURCE_NUM, TRUE);
+		}
 	}
-	AudioCoreSourceEnable(I2S0_SOURCE_NUM);
+	else
+	{
+		AudioCoreSourceEnable(I2S0_SOURCE_NUM);
+		AudioCoreSourceAdjust(I2S0_SOURCE_NUM, TRUE);
+	}
 #endif
 
 #ifdef CFG_RES_AUDIO_I2S0OUT_EN
@@ -331,7 +342,7 @@ void I2s0MixModeAudioCoreInit(void)
 	{
 		memset(&AudioIOSet, 0, sizeof(AudioCoreIO));
 
-#if (CFG_RES_I2S0_MIX_MODE == 0) || !defined(CFG_FUNC_I2S0OUT_SRA_EN)//master 或者关微调
+#if (CFG_RES_I2S0_MIX_MODE == 0) || !defined(CFG_FUNC_I2S0OUT_SRA_EN) || (USE_MCLK_IN_MODE != 0)//master 或者关微调
 		#if CFG_PARA_I2S0_SAMPLE == CFG_PARA_SAMPLE_RATE
 		AudioIOSet.Adapt = STD;
 		#else
@@ -345,7 +356,7 @@ void I2s0MixModeAudioCoreInit(void)
 		#endif
 #endif
 
-		AudioIOSet.Sync = (!CFG_RES_I2S0_MIX_MODE); //TRUE;//I2S slave 时候如果master没有接，有可能会导致DAC也不出声音。
+		AudioIOSet.Sync = TRUE;//I2S slave 时候如果master没有接，有可能会导致DAC也不出声音。
 		AudioIOSet.Channels = 2;
 		AudioIOSet.Net = DefaultNet;
 		AudioIOSet.HighLevelCent = 60;
@@ -377,6 +388,11 @@ void I2s0MixModeAudioCoreInit(void)
 		AudioCoreSinkEnable(AUDIO_I2S0_OUT_SINK_NUM);
 		AudioCoreSinkAdjust(AUDIO_I2S0_OUT_SINK_NUM, TRUE);
 
+		#ifdef CFG_RES_AUDIO_I2S0IN_EN
+		AudioCoreSourceEnable(I2S0_SOURCE_NUM);
+		AudioCoreSourceAdjust(I2S0_SOURCE_NUM, TRUE);
+		#endif
+
 		mainAppCt.tws_device_init_flag = TRUE;
 	}
 	else//sam add,20230221
@@ -387,7 +403,7 @@ void I2s0MixModeAudioCoreInit(void)
 		AudioIOSet.IOBitWidthConvFlag = 0;//DAC 24bit ,sink最后一级输出时需要转变为24bi
 		AudioCore.AudioSink[AUDIO_I2S0_OUT_SINK_NUM].BitWidth = AudioIOSet.IOBitWidth;
 		AudioCore.AudioSink[AUDIO_I2S0_OUT_SINK_NUM].BitWidthConvFlag = AudioIOSet.IOBitWidthConvFlag;
-		AudioCore.AudioSink[AUDIO_I2S0_OUT_SINK_NUM].Sync = (!CFG_RES_I2S0_MIX_MODE);
+		AudioCore.AudioSink[AUDIO_I2S0_OUT_SINK_NUM].Sync = TRUE;
 		#endif
 	}	
 #endif
@@ -400,10 +416,9 @@ void I2s1MixModeAudioCoreInit(void)
 #ifdef CFG_RES_AUDIO_I2S1IN_EN
 	if(!AudioCoreSourceIsInit(I2S1_SOURCE_NUM))
 	{
-		AudioI2s1ParamsSet();
 		memset(&AudioIOSet, 0, sizeof(AudioCoreIO));
 
-#if CFG_RES_I2S1_MIX_MODE == 0 || !defined(CFG_FUNC_I2S1IN_SRA_EN)//master 或者关微调
+#if CFG_RES_I2S1_MIX_MODE == 0 || !defined(CFG_FUNC_I2S1IN_SRA_EN) || (USE_MCLK_IN_MODE != 0)//master 或者关微调
 		#if CFG_PARA_I2S1_SAMPLE == CFG_PARA_SAMPLE_RATE
 		AudioIOSet.Adapt = STD;
 		#else
@@ -417,7 +432,7 @@ void I2s1MixModeAudioCoreInit(void)
 		#endif
 #endif
 
-		AudioIOSet.Sync = (!CFG_RES_I2S1_MIX_MODE); //TRUE;//FALSE;//
+		AudioIOSet.Sync = TRUE;
 		AudioIOSet.Channels = 2;
 		AudioIOSet.Net = DefaultNet;
 		AudioIOSet.Depth = AudioCoreFrameSizeGet(DefaultNet) * 2;//sI2SInPlayCt->I2SFIFO1 采样点深度
@@ -440,8 +455,21 @@ void I2s1MixModeAudioCoreInit(void)
 			DBG("I2S1_SOURCE_NUM source error!\n");
 			return;
 		}
+
+		#ifdef CFG_RES_AUDIO_I2S1OUT_EN
+		if(AudioCoreSinkIsInit(AUDIO_I2S1_OUT_SINK_NUM))
+		#endif
+		{
+			AudioI2s1ParamsSet();
+			AudioCoreSourceEnable(I2S1_SOURCE_NUM);
+			AudioCoreSourceAdjust(I2S1_SOURCE_NUM, TRUE);
+		}
 	}
-	AudioCoreSourceEnable(I2S1_SOURCE_NUM);
+	else
+	{
+		AudioCoreSourceEnable(I2S1_SOURCE_NUM);
+		AudioCoreSourceAdjust(I2S1_SOURCE_NUM, TRUE);
+	}
 #endif
 
 #ifdef CFG_RES_AUDIO_I2S1OUT_EN
@@ -449,7 +477,7 @@ void I2s1MixModeAudioCoreInit(void)
 	{
 		memset(&AudioIOSet, 0, sizeof(AudioCoreIO));
 
-#if CFG_RES_I2S1_MIX_MODE == 0 || !defined(CFG_FUNC_I2S1OUT_SRA_EN)//master 或者关微调
+#if CFG_RES_I2S1_MIX_MODE == 0 || !defined(CFG_FUNC_I2S1OUT_SRA_EN) || (USE_MCLK_IN_MODE != 0)//master 或者关微调
 		#if CFG_PARA_I2S1_SAMPLE == CFG_PARA_SAMPLE_RATE
 		AudioIOSet.Adapt = STD;
 		#else
@@ -463,7 +491,7 @@ void I2s1MixModeAudioCoreInit(void)
 		#endif
 #endif
 
-		AudioIOSet.Sync = (!CFG_RES_I2S1_MIX_MODE);	//I2S slave 时候如果master没有接，有可能会导致DAC也不出声音。
+		AudioIOSet.Sync = TRUE; //I2S slave 时候如果master没有接，有可能会导致DAC也不出声音。
 		AudioIOSet.Channels = 2;
 		AudioIOSet.Net = DefaultNet;
 		AudioIOSet.HighLevelCent = 60;
@@ -493,6 +521,11 @@ void I2s1MixModeAudioCoreInit(void)
 		AudioCoreSinkEnable(AUDIO_I2S1_OUT_SINK_NUM);
 		AudioCoreSinkAdjust(AUDIO_I2S1_OUT_SINK_NUM, TRUE);
 
+		#ifdef CFG_RES_AUDIO_I2S1IN_EN
+		AudioCoreSourceEnable(I2S1_SOURCE_NUM);
+		AudioCoreSourceAdjust(I2S1_SOURCE_NUM, TRUE);
+		#endif
+
 		mainAppCt.tws_device_init_flag = TRUE;
 	}
 	else//sam add,20230221
@@ -503,7 +536,7 @@ void I2s1MixModeAudioCoreInit(void)
 		AudioIOSet.IOBitWidthConvFlag = 0;//DAC 24bit ,sink最后一级输出时需要转变为24bi
 		AudioCore.AudioSink[AUDIO_I2S1_OUT_SINK_NUM].BitWidth = AudioIOSet.IOBitWidth;
 		AudioCore.AudioSink[AUDIO_I2S1_OUT_SINK_NUM].BitWidthConvFlag = AudioIOSet.IOBitWidthConvFlag;
-		AudioCore.AudioSink[AUDIO_I2S1_OUT_SINK_NUM].Sync = (!CFG_RES_I2S1_MIX_MODE);
+		AudioCore.AudioSink[AUDIO_I2S1_OUT_SINK_NUM].Sync = TRUE;
 		#endif
 	}	
 #endif
@@ -520,7 +553,7 @@ void I2sMixModeInit_HFP(void)
 	{
 		memset(&AudioIOSet, 0, sizeof(AudioCoreIO));
 
-#if CFG_RES_I2S0_MIX_MODE == 0 || !defined(CFG_FUNC_I2S_OUT_SYNC_EN)// Master 或不开微调
+#if CFG_RES_I2S0_MIX_MODE == 0 || !defined(CFG_FUNC_I2S_OUT_SYNC_EN) || (USE_MCLK_IN_MODE != 0)// Master 或不开微调
 		#if CFG_PARA_I2S0_SAMPLE == CFG_BTHF_PARA_SAMPLE_RATE
 		AudioIOSet.Adapt = STD;//SRC_ONLY
 		#else
@@ -534,7 +567,7 @@ void I2sMixModeInit_HFP(void)
 		#endif
 #endif
 
-		AudioIOSet.Sync = (!CFG_RES_I2S0_MIX_MODE);	//I2S slave 时候如果master没有接，有可能会导致DAC也不出声音。
+		AudioIOSet.Sync = TRUE;	//I2S slave 时候如果master没有接，有可能会导致DAC也不出声音。
 		AudioIOSet.Channels = 2;
 		AudioIOSet.Net = DefaultNet;
 		AudioIOSet.HighLevelCent = 60;
@@ -574,7 +607,7 @@ void I2sMixModeInit_HFP(void)
 		AudioIOSet.IOBitWidthConvFlag = 1;//DAC 24bit ,sink最后一级输出时需要转变为24bi
 		AudioCore.AudioSink[AUDIO_I2S0_OUT_SINK_NUM].BitWidth = AudioIOSet.IOBitWidth;
 		AudioCore.AudioSink[AUDIO_I2S0_OUT_SINK_NUM].BitWidthConvFlag = AudioIOSet.IOBitWidthConvFlag;
-		AudioCore.AudioSink[AUDIO_I2S0_OUT_SINK_NUM].Sync = (!CFG_RES_I2S0_MIX_MODE);
+		AudioCore.AudioSink[AUDIO_I2S0_OUT_SINK_NUM].Sync = TRUE;
 		#endif
 	}	
 #endif
@@ -585,7 +618,7 @@ void I2sMixModeInit_HFP(void)
 	{
 		memset(&AudioIOSet, 0, sizeof(AudioCoreIO));
 		
-#if CFG_RES_I2S1_MIX_MODE == 0 || !defined(CFG_FUNC_I2S_OUT_SYNC_EN)// Master 或不开微调
+#if CFG_RES_I2S1_MIX_MODE == 0 || !defined(CFG_FUNC_I2S_OUT_SYNC_EN) || (USE_MCLK_IN_MODE != 0)// Master 或不开微调
 		#if CFG_PARA_I2S1_SAMPLE == CFG_BTHF_PARA_SAMPLE_RATE
 		AudioIOSet.Adapt = STD;//SRC_ONLY
 		#else
@@ -599,7 +632,7 @@ void I2sMixModeInit_HFP(void)
 		#endif
 #endif
 
-		AudioIOSet.Sync = (!CFG_RES_I2S1_MIX_MODE);	//I2S slave 时候如果master没有接，有可能会导致DAC也不出声音。
+		AudioIOSet.Sync = TRUE;	//I2S slave 时候如果master没有接，有可能会导致DAC也不出声音。
 		AudioIOSet.Channels = 2;
 		AudioIOSet.Net = DefaultNet;
 		AudioIOSet.HighLevelCent = 60;
@@ -639,7 +672,7 @@ void I2sMixModeInit_HFP(void)
 		AudioIOSet.IOBitWidthConvFlag = 1;//DAC 24bit ,sink最后一级输出时需要转变为24bi
 		AudioCore.AudioSink[AUDIO_I2S1_OUT_SINK_NUM].BitWidth = AudioIOSet.IOBitWidth;
 		AudioCore.AudioSink[AUDIO_I2S1_OUT_SINK_NUM].BitWidthConvFlag = AudioIOSet.IOBitWidthConvFlag;
-		AudioCore.AudioSink[AUDIO_I2S1_OUT_SINK_NUM].Sync = (!CFG_RES_I2S1_MIX_MODE);
+		AudioCore.AudioSink[AUDIO_I2S1_OUT_SINK_NUM].Sync = TRUE;
 		#endif
 	}	
 #endif

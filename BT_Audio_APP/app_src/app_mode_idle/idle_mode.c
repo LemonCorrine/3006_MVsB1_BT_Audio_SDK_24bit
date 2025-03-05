@@ -540,7 +540,9 @@ void IdleModeRun(uint16_t msgId)
  		}
  		else
 #endif
- 		DeepSleeping();
+ 		{
+ 			DeepSleeping();
+ 		}
 
 	 	Timer_Config(TIMER2,1000,0);
 	 	Timer_Start(TIMER2);
@@ -568,14 +570,14 @@ void IdleModeRun(uint16_t msgId)
 		IRKeyInit();//清除多余的按键
 #endif
 
-#ifdef CFG_RES_AUDIO_I2SOUT_EN
-		AudioI2sOutParamsSet();
-#endif
+//#ifdef CFG_RES_AUDIO_I2SOUT_EN
+//		AudioI2sOutParamsSet();
+//#endif
 
-#ifdef CFG_FUNC_I2S_MIX_MODE
-		AudioI2s0ParamsSet();
-		AudioI2s1ParamsSet();
-#endif
+//#ifdef CFG_FUNC_I2S_MIX_MODE
+//		AudioI2s0ParamsSet();
+//		AudioI2s1ParamsSet();
+//#endif
 
 #ifdef CFG_RES_AUDIO_SPDIFOUT_EN		 
 		AudioSpdifOutParamsSet();
@@ -676,8 +678,6 @@ void IdleModeEnter(void)
 
 void IdleModeExit(void)
 {
-
-
 #if (defined(BT_TWS_SUPPORT) && (TWS_PAIRING_MODE == CFG_TWS_ROLE_SLAVE))
 		if(mainAppCt.SysPrevMode == ModeTwsSlavePlay)
 		{

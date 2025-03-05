@@ -8,6 +8,9 @@
 #include "ctrlvars.h"
 #endif
 
+extern MCLK_CLK_SEL PLL_CLK_SET1;
+extern MCLK_CLK_SEL PLL_CLK_SET2;
+
 #define USER_DEFINE_MCLK_112896M_DIV_VALUE 	11289600
 #define USER_DEFINE_MCLK_12288M_DIV_VALUE	12288000
 //ChannelSel :0=disable 1=LR,2=X,3=ALL
@@ -40,22 +43,22 @@ void AudioDAC_Init(DAC_MODULE DACModule, uint32_t SampleRate, void* Buf1, uint16
 	{
 		if((SampleRate == 11025) || (SampleRate == 22050) || (SampleRate == 44100))
 		{
-			Clock_AudioMclkSel(AUDIO_DAC0, PLL_CLOCK1);
+			Clock_AudioMclkSel(AUDIO_DAC0, PLL_CLK_SET1);
 		}
 		else
 		{
-			Clock_AudioMclkSel(AUDIO_DAC0, PLL_CLOCK2);
+			Clock_AudioMclkSel(AUDIO_DAC0, PLL_CLK_SET2);
 		}
 	}
 	if(DAC1Enable)
 	{
 		if((SampleRate == 11025) || (SampleRate == 22050) || (SampleRate == 44100))
 		{
-			Clock_AudioMclkSel(AUDIO_DAC1, PLL_CLOCK1);
+			Clock_AudioMclkSel(AUDIO_DAC1, PLL_CLK_SET1);
 		}
 		else
 		{
-			Clock_AudioMclkSel(AUDIO_DAC1, PLL_CLOCK2);
+			Clock_AudioMclkSel(AUDIO_DAC1, PLL_CLK_SET2);
 		}
 	}
 
@@ -239,11 +242,11 @@ void AudioDAC_SampleRateChange(DAC_MODULE DACModule, uint32_t SampleRate)
 	{
 		if((SampleRate == 11025) || (SampleRate == 22050) || (SampleRate == 44100))
 		{
-			Clock_AudioMclkSel(DAC0, PLL_CLOCK1);
+			Clock_AudioMclkSel(DAC0, PLL_CLK_SET1);
 		}
 		else
 		{
-			Clock_AudioMclkSel(DAC0, PLL_CLOCK2);
+			Clock_AudioMclkSel(DAC0, PLL_CLK_SET2);
 		}
 		AudioDAC_SampleRateSet(DAC0, SampleRate);
 	}
@@ -252,11 +255,11 @@ void AudioDAC_SampleRateChange(DAC_MODULE DACModule, uint32_t SampleRate)
 	{
 		if((SampleRate == 11025) || (SampleRate == 22050) || (SampleRate == 44100))
 		{
-			Clock_AudioMclkSel(DAC1, PLL_CLOCK1);
+			Clock_AudioMclkSel(DAC1, PLL_CLK_SET1);
 		}
 		else
 		{
-			Clock_AudioMclkSel(DAC1, PLL_CLOCK2);
+			Clock_AudioMclkSel(DAC1, PLL_CLK_SET2);
 		}
 		AudioDAC_SampleRateSet(DAC1, SampleRate);
 	}

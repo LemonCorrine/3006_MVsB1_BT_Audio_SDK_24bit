@@ -334,20 +334,15 @@ bool LineInPlayInit(void)
 
 	AudioCoreSourceUnmute(APP_SOURCE_NUM,TRUE,TRUE);
 
-#ifdef CFG_FUNC_REMIND_SOUND_EN
+	#ifdef CFG_FUNC_REMIND_SOUND_EN
 	if(RemindSoundServiceItemRequest(SOUND_REMIND_XIANLUMO, REMIND_ATTR_NEED_MUTE_APP_SOURCE) == FALSE)
+	#endif
 	{
 		if(IsAudioPlayerMute() == TRUE)
 		{
 			HardWareMuteOrUnMute();
 		}
 	}
-#else
-	if(IsAudioPlayerMute() == TRUE)
-	{
-		HardWareMuteOrUnMute();
-	}
-#endif
 
 	return TRUE;
 }

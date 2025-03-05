@@ -21,7 +21,3 @@ del parameter.ini
 cd ..\..
 fc tools\sys_parameter_script\sys_parameter.h app_src\components\flash_manage\sys_param_typedef.h
 if %errorlevel%==1 (copy tools\sys_parameter_script\sys_parameter.h app_src\components\flash_manage\sys_param_typedef.h)
-
-cd tools\audioeffect_parameters_script
-audioeffect_parameters_script.bat
-cd ..\..

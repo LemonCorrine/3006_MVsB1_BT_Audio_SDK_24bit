@@ -62,7 +62,7 @@
  //****************************************************************************************
  // 		  TF卡，USB设备检测功能
  //****************************************************************************************
-#if (defined(CFG_APP_CARD_PLAY_MODE_EN) ) || defined(CFG_APP_USB_AUDIO_MODE_EN)
+#if (defined(CFG_APP_CARD_PLAY_MODE_EN) ) //|| defined(CFG_APP_USB_AUDIO_MODE_EN)
 #define	CFG_RES_CARD_USE  //启用SD电路
 #ifdef CFG_RES_CARD_USE
 #include "sd_card.h"

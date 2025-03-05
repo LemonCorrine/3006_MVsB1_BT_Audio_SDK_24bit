@@ -496,7 +496,6 @@ static void MediaPlayMsgProcess(uint16_t msgId)
  */
 bool MediaPlayInit(void)
 {
-
 	bool ret = FALSE;
 	
 	if(sMediaPlayCt != NULL)
@@ -508,9 +507,8 @@ bool MediaPlayInit(void)
 	//音效参数遍历，确定系统帧长，待修改，sam, mark
 #endif
 #ifdef BT_TWS_SUPPORT
-	tws_delay = BT_TWS_DELAY_DEFAULT;
+//	tws_delay = BT_TWS_DELAY_DEFAULT;
 #endif
-
 
 	//DMA channel
 	DMA_ChannelAllocTableSet((uint8_t*)DmaChannelMap);
@@ -803,60 +801,64 @@ bool MediaPlayDeinit(void)
 	PauseAuidoCore();
 	MediaPlayerCloseSongFile();
 
-//注意此处，如果在TaskStateCreated,进入stop，它尚未init。
+	//注意此处，如果在TaskStateCreated,进入stop，它尚未init。
 	AudioCoreProcessConfig((void*)AudioNoAppProcess);
 	AudioCoreSourceDisable(sMediaPlayCt->SourceNum);
 	//AudioCoreSourceUnmute(sMediaPlayCt->SourceNum, TRUE, TRUE);
 	
 #ifndef CFG_FUNC_MIXER_SRC_EN
-#ifdef CFG_RES_AUDIO_DACX_EN
+	#ifdef CFG_RES_AUDIO_DACX_EN
 	AudioDAC_SampleRateChange(ALL, CFG_PARA_SAMPLE_RATE);//恢复
-#endif
-#ifdef CFG_RES_AUDIO_DAC0_EN
+	#endif
+	#ifdef CFG_RES_AUDIO_DAC0_EN
 	AudioDAC_SampleRateChange(DAC0, CFG_PARA_SAMPLE_RATE);//恢复
+	#endif
 #endif
-#endif
-//	AudioCoreSourceDeinit(REMIND_SOURCE_NUM);
+
 	AudioCoreSourceDeinit(sMediaPlayCt->SourceNum);
 	//Kill used services
 	DecoderServiceDeinit(DECODER_MODE_CHANNEL);
+
+#ifdef	CFG_APP_USB_PLAY_MODE_EN
 	if(GetSysModeState(ModeUDiskAudioPlay) == ModeStateDeinit
-	#ifdef CFG_FUNC_RECORDER_EN
-				|| GetSysModeState(ModeUDiskPlayBack) == ModeStateDeinit
-	#endif
+			#ifdef CFG_FUNC_RECORDER_EN
+			|| GetSysModeState(ModeUDiskPlayBack) == ModeStateDeinit
+			#endif
 		 )
 	{
-#ifdef	CFG_APP_USB_PLAY_MODE_EN
 		f_unmount(MEDIA_VOLUME_STR_U);
 		osMutexUnlock(UDiskMutex);
-#ifdef CFG_FUNC_UDISK_DETECT
+		#ifdef CFG_FUNC_UDISK_DETECT
 		if(!IsUDiskLink())
 		{
 			SoftFlagDeregister(SoftFlagUpgradeOK);
 		}
-#endif
+		#endif
 		APP_DBG("unmount u disk\n");
-#endif
 	}
-	else if(GetSysModeState(ModeCardAudioPlay) == ModeStateDeinit
-#ifdef CFG_FUNC_RECORDER_EN
-			|| GetSysModeState(ModeCardPlayBack) == ModeStateDeinit
 #endif
+
+#if (defined(CFG_APP_CARD_PLAY_MODE_EN) )
+	if(GetSysModeState(ModeCardAudioPlay) == ModeStateDeinit
+			#ifdef CFG_FUNC_RECORDER_EN
+			|| GetSysModeState(ModeCardPlayBack) == ModeStateDeinit
+			#endif
 		)
 	{
-#if (defined(CFG_APP_CARD_PLAY_MODE_EN) )
 		f_unmount(MEDIA_VOLUME_STR_C);
 		SDCardDeinit(CFG_RES_CARD_GPIO);
 		osMutexUnlock(SDIOMutex);
-#ifdef CFG_FUNC_CARD_DETECT
+
+		#ifdef CFG_FUNC_CARD_DETECT
 		if(GetCardState() == DETECT_STATE_OUT)
-#endif
+		#endif
 		{
 			SoftFlagDeregister(SoftFlagUpgradeOK);
 		}
 		APP_DBG("unmount sd card\n");
-#endif
 	}
+#endif
+
 	
 	//PortFree
 	ffpresearch_deinit();
@@ -882,7 +884,7 @@ bool MediaPlayDeinit(void)
 	osPortFree(sMediaPlayCt);
 	sMediaPlayCt = NULL;
 #ifdef BT_TWS_SUPPORT
-	tws_delay = BT_TWS_DELAY_DEINIT;
+//	tws_delay = BT_TWS_DELAY_DEINIT;
 #endif
 	return TRUE;
 

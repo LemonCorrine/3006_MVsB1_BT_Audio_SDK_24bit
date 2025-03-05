@@ -4,7 +4,7 @@
 
 // 8  --> 8Mb		
 // 4/8/16/32/64/128
-#if defined(FUNC_OS_DEBUG) || defined(CFG_FUNC_STRING_CONVERT_EN)   //如需中文字库，flash容量需要选择16M
+#if defined(FUNC_OS_DEBUG) // || defined(CFG_FUNC_STRING_CONVERT_EN)   //如需中文字库，flash容量需要选择16M
 		#define FLASH_CAPACTITY_TYPE	16	//系统调试模式下,flash容量选择16Mb
 #else
 	#if defined (CFG_CHIP_BP1048B1) || defined (CFG_CHIP_MT166) ||  defined (CFG_CHIP_BP1032A1)

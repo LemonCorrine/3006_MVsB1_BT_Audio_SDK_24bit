@@ -144,11 +144,13 @@ typedef enum _EffectType
 	CUSTOMER = 100,////用户自定义音效，固定为100
 	//注意，用户自定义音效，参数往后增加
 	
+#ifndef CFG_EFFECT_PARAM_UPDATA_BY_ACPWORKBENCH
 	VIRTUAL_SURROUND,
 	HowlingGuard,
 	PhaseShifter,
 	DC_Blocker,
 	Butterworth,
+#endif
 	DynamicEQ,
 	
 	EFFECT_NUM_MAX

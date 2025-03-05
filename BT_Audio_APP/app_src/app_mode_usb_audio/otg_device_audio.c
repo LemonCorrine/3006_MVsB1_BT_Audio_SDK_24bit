@@ -310,6 +310,9 @@ void OTG_DeviceAudioRequest(void)
 			{
 				UsbAudioSpeaker.AudioSampleRate = Request[1]*256 + Request[0];
 				printf("UsbAudioSpeaker.AudioSampleRate:%u\n",(unsigned int)UsbAudioSpeaker.AudioSampleRate);
+				#ifdef CFG_AUDIO_OUT_AUTO_SAMPLE_RATE_44100_48000
+					 AudioOutSampleRateSet(UsbAudioSpeaker.AudioSampleRate);
+				#endif
 				AudioCoreSourceChange(USB_AUDIO_SOURCE_NUM, UsbAudioSpeaker.Channels, UsbAudioSpeaker.AudioSampleRate);
 				//UsbAudioSpeakerSampleRateChange(UsbAudioSpeaker.AudioSampleRate);//bkd del
 			}

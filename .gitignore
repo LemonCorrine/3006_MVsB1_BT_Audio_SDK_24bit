@@ -1,7 +1,7 @@
 ;
 /source/
 ;
-/BT_Audio_APP/Debug/
+/BT_Audio_APP/Release/
 /BT_Audio_APP/.settings/com.andestech.ide.flash.ui.prefs
 /MVsB1_Base_SDK/tools/remind_script/sound_remind_item.h
 /MVsB1_Base_SDK/tools/remind_script/all.bin

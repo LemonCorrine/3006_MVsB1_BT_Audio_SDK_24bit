@@ -220,29 +220,42 @@ void Timer6Interrupt(void)
 
 void SystemClockInit(void)
 {
+	Clock_SysClkSelect(RC_CLK_MODE);
+
 	//clock配置
 	Clock_Config(1, 24000000);
 
 #ifdef CFG_RES_AUDIO_SPDIFOUT_EN
 	Clock_PllLock(300000);
 #elif defined(BT_TWS_SUPPORT)
-	//此处主频不可修改
-	Clock_PllLock(316108);//11.2896*28=316.1088MHz
-	*(uint32_t*)0x40026008 = 0x27837B;
+
+	Clock_PllLock(SYS_CORE_DPLL_FREQ / 10);
+	*(uint32_t*)0x40026008 = ((uint64_t)8192 * SYS_CORE_DPLL_FREQ / 10000);  // 0x2BBF48--349M    0x27837B--316M
+
 #elif defined(LOSSLESS_DECODER_HIGH_RESOLUTION)
 	Clock_PllLock(320000);//主频设置为最高320M
 #else
 	Clock_PllLock(288000);
 #endif
 
+	#if (SYS_CORE_DPLL_FREQ == 3499776)
+	Clock_APllLock(300000);
+	#else
 	Clock_APllLock(240000);
+	#endif
+
 #ifdef CFG_RES_AUDIO_SPDIFOUT_EN
 	Clock_USBClkDivSet(5);// bkd add for u disk 60M 2019.4.17
 	Clock_SysClkSelect(PLL_CLK_MODE);
 	Clock_USBClkSelect(PLL_CLK_MODE);
 	Clock_UARTClkSelect(PLL_CLK_MODE);
 #else
+	#if (SYS_CORE_DPLL_FREQ == 3499776)
+	Clock_USBClkDivSet(5);// bkd add for u disk 60M 2019.4.17
+	#else
 	Clock_USBClkDivSet(4);// bkd add for u disk 60M 2019.4.17
+	#endif
+
 	Clock_SysClkSelect(PLL_CLK_MODE);
 	Clock_USBClkSelect(APLL_CLK_MODE);
 	Clock_UARTClkSelect(APLL_CLK_MODE);
@@ -252,7 +265,15 @@ void SystemClockInit(void)
 	Clock_Module1Enable(ALL_MODULE1_CLK_SWITCH);
 	Clock_Module2Enable(ALL_MODULE2_CLK_SWITCH);
 	Clock_Module3Enable(ALL_MODULE3_CLK_SWITCH);
-	Clock_ApbClkDivSet(5);
+
+	if (Clock_CoreClockFreqGet() > 320*1000000)
+	{
+		Clock_ApbClkDivSet(6);
+	}
+	else
+	{
+		Clock_ApbClkDivSet(5);
+	}
 }
 
 void LogUartConfig(bool InitBandRate)
@@ -363,11 +384,22 @@ void WakeupMain(void)
 	Chip_Init(1);
 	SysTickDeInit();
 	WDG_Enable(WDG_STEP_4S);
+	Efuse_ReadDataEnable();
 	SystemClockInit();
 	SysTickInit();
-	Efuse_ReadDataEnable(); 
+//	Efuse_ReadDataEnable(); 
 	Clock_DeepSleepSysClkSelect(PLL_CLK_MODE, FSHC_PLL_CLK_MODE, 0);
-	SpiFlashInit(96000000, MODE_4BIT, 0, FSHC_PLL_CLK_MODE);
+
+	if (Clock_CoreClockFreqGet() == 360*1000000){
+		SpiFlashInit(90000000, MODE_4BIT, 0, FSHC_PLL_CLK_MODE);
+	}
+	else if (Clock_CoreClockFreqGet() > 320*1000000){
+		SpiFlashInit(100000000, MODE_4BIT, 0, FSHC_APLL_CLK_MODE);
+	}
+	else{
+		SpiFlashInit(96000000, MODE_4BIT, 0, FSHC_PLL_CLK_MODE);
+	}
+
 	LogUartConfig(TRUE);//调整时钟后，重配串口前不要打印。
 	//Clock_Pll5ClkDivSet(8);// 
 	//B0B1为SW调式端口，在调试阶段若系统进入了低功耗模式时关闭了GPIO复用模式，请在此处开启
@@ -450,7 +482,16 @@ int main(void)
 	memcpy((void *)0x20006000, (void *)(&__sdk_code_start), TCM_SIZE*1024);
 	Remap_AddrRemapSet(ADDR_REMAP1, (uint32_t)(&__sdk_code_start), 0x20006000, TCM_SIZE);//SDK占用的TCM空间12K
 #endif
-	SpiFlashInit(96000000, MODE_4BIT, 0, FSHC_PLL_CLK_MODE);
+
+	if (Clock_CoreClockFreqGet() == 360*1000000){
+		SpiFlashInit(90000000, MODE_4BIT, 0, FSHC_PLL_CLK_MODE);
+	}
+	else if (Clock_CoreClockFreqGet() > 320*1000000){
+		SpiFlashInit(100000000, MODE_4BIT, 0, FSHC_APLL_CLK_MODE);
+	}
+	else{
+		SpiFlashInit(96000000, MODE_4BIT, 0, FSHC_PLL_CLK_MODE);
+	}
 	Clock_RC32KClkDivSet(Clock_RcFreqGet(TRUE) / 32000);//不可屏蔽
 	
 	//考虑到大容量的8M flash，写之前需要Unlock，SDK默认不做加锁保护

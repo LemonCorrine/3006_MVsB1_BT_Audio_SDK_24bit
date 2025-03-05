@@ -22,6 +22,11 @@ extern void* effect_list_param[AUDIO_EFFECT_SUM];
 void Communication_Effect_Send(uint8_t *buf, uint32_t len);
 uint8_t AudioEffectClassDescParser(uint8_t Control,const void *pdata);
 void Comm_Effect_Send(void *pEffect, uint8_t Enable, void* param, uint16_t Len, uint8_t Control);
+
+#ifdef CFG_EFFECT_PARAM_UPDATA_BY_ACPWORKBENCH
+extern uint8_t effect_enable_list[AUDIO_EFFECT_SUM];
+#endif
+
 //--------------//
 /*
  * 具体协议在调音工具目录下：固件与用户应用程序通信协议V2.39.3.pdf----> 5.20.46 用户自定义音效格式
@@ -86,7 +91,7 @@ const ButterWorthDescribe ButterWorthTab=
 };
 void Comm_Effect_ButterWorth(EffectNode *pNode, uint8_t * buf, uint8_t index)
 {
-#if CFG_AUDIO_EFFECT_DYNAMIC_EQ
+#if CFG_AUDIO_EFFECT_BUTTERWORTH
 	int16_t TmpData16;
 	uint8_t Control = index + 0x81;
 	ButterWorthUnit *p = (ButterWorthUnit *)pNode->EffectUnit;

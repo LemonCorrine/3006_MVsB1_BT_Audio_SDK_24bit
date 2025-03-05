@@ -6908,6 +6908,15 @@ void UsbLoadAudioMode(uint16_t len,uint8_t *buff)
 				position++;
 			}
 	 	}
+#ifdef BT_PROFILE_BQB_ENABLE
+		else if((buff[position] == 'B') && (buff[position+1] == 'T') && (buff[position+2] == '+'))
+		{
+			extern void bt_bqb_cmd_process(uint8_t *data);
+			bt_bqb_cmd_process(&buff[position+3]);
+
+			break;
+		}
+#endif//BT_PROFILE_BQB_ENABLE
 		else // serch start code....
 		{
 			position++;

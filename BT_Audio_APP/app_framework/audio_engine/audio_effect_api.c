@@ -525,7 +525,7 @@ void AudioEffectSilenceDetectorApply24(SilenceDetectorUnit *unit, int32_t *pcm_i
 	unit->param.level = (level>>8);
 
 #ifdef CFG_FUNC_SILENCE_AUTO_POWER_OFF_EN
-	DBG("unit->param.level = %d\n", unit->param.level);
+	//DBG("unit->param.level = %d\n", unit->param.level);
     if(unit->param.level > SILENCE_THRESHOLD)
     {
         mainAppCt.Silence_Power_Off_Time = 0;
@@ -1546,7 +1546,7 @@ void AudioEffectHowlingSuppressorFineApply(HowlingFineUnit *unit, int16_t *pcm_i
  *
  *
  ************************************************************/
-#if CFG_AUDIO_EFFECT_DYNAMIC_EQ
+#if CFG_AUDIO_EFFECT_DYNAMIC_EQ && defined(CFG_FUNC_AUDIO_EFFECT_EN)
 void AudioEffectDynamicEqInit(DynamicEqUnit *unit, uint8_t channel, uint32_t sample_rate)
 {
 	if((unit->enable == FALSE)||(unit->eq_low==NULL)||(unit->eq_high==NULL))

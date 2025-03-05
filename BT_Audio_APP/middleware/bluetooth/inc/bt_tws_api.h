@@ -206,8 +206,9 @@ typedef enum
 	TWS_ROLE_SLAVE,
 }TWS_PAIRING_ROLE;
 
+extern uint32_t tws_delay_frames;
 #define TWS_SOURCE_FRAME0		(0x1000)
-#define	TWS_ENCODE_FRAME0		(TWS_SOURCE_FRAME0 + 112)//编码起始帧号
+#define	TWS_ENCODE_FRAME0		(TWS_SOURCE_FRAME0 + tws_delay_frames)//编码起始帧号
 
 
 /***************************************************************************
@@ -232,8 +233,9 @@ uint8_t tws_cur_role_get(void);
 /***************************************************************************
  * tws内存管理
  ****************************************************************************/
-uint32_t tws_mem_size(uint32_t delay,uint8_t audio_mode);
+uint32_t tws_mem_size(uint32_t depth_frames,uint8_t audio_mode);
 uint32_t tws_mem_set(uint8_t*mem);
+void tws_delay_set(uint32_t delay_frames);
 
 //bt task
 /***************************************************************************

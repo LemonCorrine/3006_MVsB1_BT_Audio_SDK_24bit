@@ -501,6 +501,8 @@ typedef struct _BtStackParams
 
 	/*AVRCP releated features*/
 	AvrcpAppFeatures	avrcpFeatures;
+
+	uint8_t				BQBTestFlag;
 }BtStackParams;
 
 

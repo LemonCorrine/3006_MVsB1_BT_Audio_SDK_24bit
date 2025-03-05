@@ -199,6 +199,33 @@ bool I2SInPlayResMalloc(uint16_t SampleLen)
 	return TRUE;
 }
 
+void I2SInDmaFifoRest(void)
+{
+	if(sI2SInPlayCt == NULL)
+		return;
+
+	uint32_t I2S_RX_FIFO_LEN;
+	I2S_RX_FIFO_LEN = AudioCoreFrameSizeGet(DefaultNet) * sizeof(PCM_DATA_TYPE) * 2 * 2;
+
+	memset(sI2SInPlayCt->I2SFIFO1, 0, I2S_RX_FIFO_LEN);
+
+	#if CFG_RES_I2S == 0
+	*(volatile unsigned long *)0x40029000 &= ~0x80;//disable iis0
+	#else
+	*(volatile unsigned long *)0x4002A000 &= ~0x80;//disable iis1
+	#endif
+	RST_I2SModule(I2S0_MODULE + CFG_RES_I2S);
+	DMA_InterruptFlagClear((PERIPHERAL_ID_I2S0_RX + CFG_RES_I2S * 2), DMA_DONE_INT);
+	DMA_InterruptFlagClear((PERIPHERAL_ID_I2S0_RX + CFG_RES_I2S * 2), DMA_THRESHOLD_INT);
+	DMA_InterruptFlagClear((PERIPHERAL_ID_I2S0_RX + CFG_RES_I2S * 2), DMA_ERROR_INT);
+	DMA_ChannelDisable(PERIPHERAL_ID_I2S0_RX + CFG_RES_I2S * 2);
+	DMA_CircularConfig((PERIPHERAL_ID_I2S0_RX + CFG_RES_I2S * 2), I2S_RX_FIFO_LEN/2, sI2SInPlayCt->I2SFIFO1, I2S_RX_FIFO_LEN);
+	GIE_DISABLE();
+	DMA_CircularWritePtrSet((PERIPHERAL_ID_I2S0_RX + CFG_RES_I2S * 2), I2S_RX_FIFO_LEN - sizeof(PCM_DATA_TYPE) * 2);
+	GIE_ENABLE();
+	DMA_ChannelEnable(PERIPHERAL_ID_I2S0_RX + CFG_RES_I2S * 2);
+}
+
 bool I2SInPlayResInit(void)
 {
 	I2SParamCt i2s_set;
@@ -248,20 +275,20 @@ bool I2SInPlayResInit(void)
 	//Core Soure1.Para
 	AudioCoreIO	AudioIOSet;
 	memset(&AudioIOSet, 0, sizeof(AudioCoreIO));
-#if CFG_RES_I2S_MODE == 0 || !defined(CFG_FUNC_I2S_IN_SYNC_EN)//master 或者关微调
-#if CFG_PARA_I2S_SAMPLERATE == CFG_PARA_SAMPLE_RATE
+#if CFG_RES_I2S_MODE == 0 || !defined(CFG_FUNC_I2S_IN_SYNC_EN) || (USE_MCLK_IN_MODE != 0)//master 或者关微调
+	#if CFG_PARA_I2S_SAMPLERATE == CFG_PARA_SAMPLE_RATE
 	AudioIOSet.Adapt = STD;
-#else
+	#else
 	AudioIOSet.Adapt = SRC_ONLY;
-#endif
+	#endif
 #else //slave
-#if CFG_PARA_I2S_SAMPLERATE == CFG_PARA_SAMPLE_RATE
+	#if CFG_PARA_I2S_SAMPLERATE == CFG_PARA_SAMPLE_RATE
 	AudioIOSet.Adapt = SRA_ONLY;//CLK_ADJUST_ONLY;//
-#else
+	#else
 	AudioIOSet.Adapt = SRC_SRA;//SRC_ADJUST;//
+	#endif
 #endif
-#endif
-	AudioIOSet.Sync = (!CFG_RES_I2S_MODE);//TRUE;//FALSE;//
+	AudioIOSet.Sync = TRUE; //I2S slave 时候如果master没有接，有可能会导致DAC也不出声音。
 	AudioIOSet.Channels = 2;
 	AudioIOSet.Net = DefaultNet;
 	AudioIOSet.Depth = AudioCoreFrameSizeGet(DefaultNet) * 2;//sI2SInPlayCt->I2SFIFO1 采样点深度
@@ -345,20 +372,15 @@ bool  I2SInPlayInit(void)
 	AudioEffectsLoadInit(0, mainAppCt.EffectMode);
 #endif
 
-#ifdef CFG_FUNC_REMIND_SOUND_EN
-	if(RemindSoundServiceItemRequest(SOUND_REMIND_I2SMODE, REMIND_PRIO_NORMAL) == FALSE)
+	#ifdef CFG_FUNC_REMIND_SOUND_EN
+	if(RemindSoundServiceItemRequest(SOUND_REMIND_I2SMODE, REMIND_ATTR_NEED_MUTE_APP_SOURCE) == FALSE)
+	#endif
 	{
 		if(IsAudioPlayerMute() == TRUE)
 		{
 			HardWareMuteOrUnMute();
 		}
 	}
-#else
-	if(IsAudioPlayerMute() == TRUE)
-	{
-		HardWareMuteOrUnMute();
-	}
-#endif
 
 	return ret;
 }

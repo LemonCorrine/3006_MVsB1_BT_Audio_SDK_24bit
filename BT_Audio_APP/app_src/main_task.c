@@ -205,7 +205,7 @@ static void SysVarInit(void)
 	}
 	else
 	{
-		tws_delay = BT_TWS_DELAY_BTMODE;
+		tws_delay = TWS_DELAY_FRAMES;
 	}
 #endif
 	mainAppCt.MusicVolume = pBpSysInfo->MusicVolume;

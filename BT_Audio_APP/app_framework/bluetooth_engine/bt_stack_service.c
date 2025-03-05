@@ -106,9 +106,9 @@ BtStackServiceContext		gBtStackServiceContext;
 BT_CONFIGURATION_PARAMS		gBtConfigParams;
 
 
-#ifdef TWS_CODE_BACKUP
+//#ifdef TWS_CODE_BACKUP
 uint32_t g_tws_need_init;
-#endif
+//#endif
 extern uint8_t tws_slave_cap;
 
 static void BtRstStateCheck(void);
@@ -117,6 +117,26 @@ extern int8_t ME_CancelInquiry(void);
 extern void SlowDevice_MsgSend(uint16_t msgId);
 #endif
 
+/***********************************************************************************
+ * TWS CLK
+ **********************************************************************************/
+#define		PLL_CNT_PER_500MSEC_ACT		((SYS_CORE_DPLL_FREQ / 10) * 1000 / 2)
+#define		PLL_CNT_PER_SEC				((SYS_CORE_DPLL_FREQ / 10) * 1000)
+#define		PLL_CNT_PER_500MSEC			(PLL_CNT_PER_SEC/2)
+
+uint32_t GetPllCntPer500msecAct(void)
+{
+	return PLL_CNT_PER_500MSEC_ACT;
+}
+uint32_t GetPllCntPerSec(void)
+{
+	return PLL_CNT_PER_SEC;
+}
+
+uint32_t GetPllCntPer500msec(void)
+{
+	return PLL_CNT_PER_500MSEC;
+}
 
 /***********************************************************************************
  *
@@ -181,7 +201,7 @@ void BtStack_BtAvrcpConProcess(void)
 	static uint32_t btAvrcpConCnt = 0;
 
 	btAvrcpConCnt++;
-	if(btAvrcpConCnt>=200) //200ms
+	if(btAvrcpConCnt>=1500) //1500ms//时间太短,会导致部分手机音量同步功能不生效
 	{
 		btAvrcpConCnt=0;
 		if((btManager.btLinked_env[btAvrcpConIndex].a2dpState >= BT_A2DP_STATE_CONNECTED)
@@ -1200,28 +1220,31 @@ static void BtStackServiceEntrance(void * param)
 		}
 
 		CheckBtEventTimer();
-#ifdef	TWS_CODE_BACKUP
+
 #ifdef BT_TWS_SUPPORT
-		if(g_tws_need_init == 1)
+		if (g_tws_need_init > 0)
+		{
+			g_tws_need_init--;
+		}
+		if((g_tws_need_init <= 4000) && (g_tws_need_init != 0))
 		{
 			if(GetBtManager()->twsState == BT_TWS_STATE_CONNECTED)
 			{
 				#ifdef CFG_FUNC_REMIND_SOUND_EN			
-				if(RemindSoundIsPlay() <= 1 ) //没有播放提示音 
+				if(!RemindSoundIsPlay()) //没有播放提示音
 				#endif				
 				{
+					if(IsAudioPlayerMute() == FALSE){
+						HardWareMuteOrUnMute();
+					}
 					APP_DBG("tws_audio_init_sync...\n");
-
-					
-					g_tws_need_init = 2;
-					tws_audio_init_sync();
+					g_tws_need_init = 0;
+					//tws_audio_init_sync();
+					tws_sync_reinit();
 				}
 			}
 		}
 #endif
-		//先去掉同步标志位，会导致无声问题
-		g_tws_need_init = 0;
-#endif //TWS_CODE_BACKUP
 
 		extern uint32_t a2dp_pause_delay_cnt;
 		if(a2dp_pause_delay_cnt)
@@ -1565,16 +1588,19 @@ void BtPowerOff(void)
 		}
 
 		//快速在BT模式和其他模式(共2个模式)切换，需要delay(500);避免蓝牙初始化和反初始化状态未完成导致的错误
-		//vTaskDelay(500);
 		vTaskDelay(50);
 	}
 	
+#ifdef BT_TWS_SUPPORT
+	BtReconnectTwsStop();
+	BtTwsDeviceDisconnectExt();
+	vTaskDelay(10);
+#endif
+
 	if(GetBtDeviceConnState() == BT_DEVICE_CONNECTION_MODE_NONE)
 	{
-
 		BTDisconnect(0);
 		BTDisconnect(1);
-
 	}
 
 	//在蓝牙回连时,需要先取消蓝牙回连行为
