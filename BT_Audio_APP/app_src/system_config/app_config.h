@@ -110,7 +110,7 @@
 
 
 //#define CFG_APP_HDMIIN_MODE_EN 		//-------HDMI IN模式---------------//
-#define CFG_APP_USB_AUDIO_MODE_EN		//-------USB声卡，读卡器，一线通功能---//
+//#define CFG_APP_USB_AUDIO_MODE_EN		//-------USB声卡，读卡器，一线通功能---//
 
 
 #if defined(CFG_APP_LINEIN_MODE_EN) || defined(CFG_FUNC_LINE_MIX_MODE)
@@ -199,7 +199,7 @@
 #define CFG_RES_AUDIO_DACX_EN
 
 /**I2S音频输出通道配置选择**/
-//#define CFG_RES_AUDIO_I2SOUT_EN
+#define CFG_RES_AUDIO_I2SOUT_EN //TWS状态 使用I2S输出音频 不能关闭CFG_RES_AUDIO_DAC0_EN和CFG_RES_AUDIO_DACX_EN
 
 /**光纤同轴音频输出通道配置选择**/
 //#define CFG_RES_AUDIO_SPDIFOUT_EN   // 此功能必须关闭TWS
@@ -544,7 +544,7 @@
 	#define TWS_SINK_DEV_FIFO_SAMPLES	(CFG_PARA_SAMPLES_PER_FRAME * 2)
 #endif
 //Key device for sync
-	#define TWS_AUDIO_OUT_PATH	TWS_DAC0_OUT//TWS_IIS0_OUT//TWS_IIS1_OUT
+	#define TWS_AUDIO_OUT_PATH	TWS_DAC0_OUT//TWS_IIS0_OUT//TWS_IIS1_OUT//TWS_DAC0_OUT
 
 #else
 	#define TWS_AUDIO_OUT_PATH	0xff//释放音频内存
