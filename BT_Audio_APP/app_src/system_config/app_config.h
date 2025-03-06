@@ -583,7 +583,7 @@
 		#define SW_UART_IO_PORT_PIN_INDEX	    1//bit num
 		#define  CFG_SW_UART_BANDRATE   		512000//software uart baud rate select:38400 57600 115200 256000 512000 1000000 ,default 512000
 	#else
-		#define CFG_UART_TX_PORT 				(0)//tx port  0--A6£¬1--A10, 2--A25, 3--A0, 4--A1
+		#define CFG_UART_TX_PORT 				(2)//tx port  0--A6£¬1--A10, 2--A25, 3--A0, 4--A1
 		#define  CFG_UART_BANDRATE   			512000//hardware uart baud set
 	#endif
 #endif
