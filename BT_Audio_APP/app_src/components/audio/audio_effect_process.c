@@ -71,11 +71,19 @@ void MV_memcpy_16bit(int16_t *pcm_out, int16_t *pcm_in, uint32_t n)
 void MV_memcpy_24bit(int32_t *pcm_out, int32_t *pcm_in, uint32_t n)
 {
 	int16_t  s;
+	int32_t  pcm;
 	for(s = 0; s < n; s++)
 	{
 		pcm_out[2*s + 0] = pcm_in[2*s + 0];
 		pcm_out[2*s + 1] = pcm_in[2*s + 1];
 	}
+	
+	for(s = 0; s < n; s++)
+		{
+			pcm = __nds32__clips((((int32_t)pcm_out[2 * s + 0]/2 + (int32_t)pcm_out[2 * s + 1]/2) ), AUDIO_WIDTH-1);
+			pcm_out[2 * s + 0] = pcm;
+			pcm_out[2 * s + 1] = pcm;
+		}
 }
 
 #ifdef CFG_FUNC_AUDIO_EFFECT_EN
@@ -86,6 +94,7 @@ void AudioMusicProcess(AudioCoreContext *pAudioCore)
 	int16_t  s;
 	uint16_t n = AudioCoreFrameSizeGet(AudioCore.CurrentMix);
 	EffectNode*  pNode 			= NULL;
+	
 #ifdef BT_TWS_SUPPORT
 	int16_t *line_in        	= NULL;//pBuf->line_in;
 	int16_t *spdif_in       	= NULL;//pBuf->spdif_in;
@@ -334,6 +343,15 @@ void AudioMusicProcess(AudioCoreContext *pAudioCore)
 #endif
 
 #ifdef BT_TWS_SUPPORT
+	#if 0
+	if(mainAppCt.in_mode_cnt|| mainAppCt.user_aux_fm_pause){
+			  for(s = 0; s < n; s++)			  
+			  {
+				  music_in[2*s + 0] = 0;
+				  music_in[2*s + 1] = 0;
+			  } 		  
+		  }
+	#endif
 	if(music_in)
 	{
 		AudioCoreAppSourceVolApply(APP_SOURCE_NUM, music_in, n, 2);//增益控制在信号能量检测之后处理
@@ -638,18 +656,21 @@ void AudioMusicProcess(AudioCoreContext *pAudioCore)
 
 		#ifdef CFG_RES_AUDIO_I2S0OUT_EN
 		if (i2s0_out){
+			
 			MV_memcpy_24bit(i2s0_out, monitor_out, n);
 		}
 		#endif
 
 		#ifdef CFG_RES_AUDIO_I2S1OUT_EN
 		if (i2s1_out){
+			
 			MV_memcpy_24bit(i2s1_out, monitor_out, n);
 		}	
 		#endif
 
 		#ifdef CFG_RES_AUDIO_I2SOUT_EN
 		if (i2s_out){
+			
 			MV_memcpy_24bit(i2s_out, monitor_out, n);
 		}
 		#endif
@@ -659,6 +680,8 @@ void AudioMusicProcess(AudioCoreContext *pAudioCore)
 			MV_memcpy_24bit(spdif_out, monitor_out, n);
 		}
 		#endif
+		
+		
 	}
 
 #ifdef CFG_RES_AUDIO_DACX_EN

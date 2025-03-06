@@ -77,9 +77,15 @@ const uint16_t gSysVolArr[CFG_PARA_MAX_VOLUME_NUM + 1] =
 	1830/*-7db*/,	2053/*-6db*/,	2303/*-5db*/,	2584/*-4db*/,	2900/*-3db*/,	3254/*-2db*/,	3651/*-1db*/,	4096/*0db*/
 #endif
 #if CFG_PARA_MAX_VOLUME_NUM == 16
+#if 1
+	0/*-72db*/,  	
+	6/*-56db*/,15/*-40db*/,	41/*-29db*/,	65/*-24db*/,	103/*-20db*/,	145/*-17db*/,	205/*-15db*/,	325/*-13db*/,  
+	516/*-11db*/,	817/*-9db*/,	1453/*-7db*/,	2303/*-5db*/,	2900/*-3db*/,	3254/*-2db*/,	3651/*-1db*/,	4096/*0db*/
+	#else
 	0/*-72db*/,  	
 	6/*-56db*/,41/*-40db*/,	145/*-29db*/,	258/*-24db*/,	410/*-20db*/,	576/*-17db*/,	728/*-15db*/,	917/*-13db*/,  
 	1154/*-11db*/,	1453/*-9db*/,	1830/*-7db*/,	2303/*-5db*/,	2900/*-3db*/,	3254/*-2db*/,	3651/*-1db*/,	4096/*0db*/
+	#endif
 #endif
 };
 
@@ -456,6 +462,11 @@ void AudioMusicVol(uint8_t musicVol)
 #endif
 
 	AudioCoreSourceVolSet(APP_SOURCE_NUM, gSysVolArr[mainAppCt.gSysVol.AudioSourceVol[APP_SOURCE_NUM]], gSysVolArr[mainAppCt.gSysVol.AudioSourceVol[APP_SOURCE_NUM]]);
+if(BLE_SUPPORT)
+ {
+ extern void Communication_ble_VOL_tx();
+ Communication_ble_VOL_tx();
+ }
 }
 
 void AudioMusicVolSet(uint8_t musicVol)

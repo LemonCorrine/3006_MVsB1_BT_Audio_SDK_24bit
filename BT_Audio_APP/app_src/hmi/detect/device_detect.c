@@ -738,6 +738,7 @@ void DeviceServicePocess(uint16_t device_msgId)
 		if(msgSend.msgId != MSG_NONE)
 		{
 #ifdef BT_TWS_SUPPORT	
+			APP_DBG("twsState = %d twsRole = %d msgId = %d\n",GetBtManager()->twsState,GetBtManager()->twsRole,msgSend.msgId);
 			if((GetBtManager()->twsState == BT_TWS_STATE_CONNECTED)&&(GetBtManager()->twsRole == BT_TWS_SLAVE))
 			{
 				is_need_send_to_master = TRUE;

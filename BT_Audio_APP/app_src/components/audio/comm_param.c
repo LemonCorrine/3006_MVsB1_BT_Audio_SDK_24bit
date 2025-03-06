@@ -17,20 +17,21 @@ const EffectComCt AudioEffectCommParam[]=
 	{2, NodeType_Bifurcate, SILENCE_DETECTOR,		"2:Music Silence Detector", 		24,  0xFF},//0x89
 	{2, NodeType_Normal, 	COMPANDER,				"2:Music Compander",				24,  0xFF},//0x8A
 	{2, NodeType_Normal, 	LOW_LEVEL_COMPRESSOR,	"2:Music Low Level Compressor",		24,  0xFF},//0x8B
-	{2, NodeType_Normal, 	VIRTUAL_BASS, 			"2:Music VB",						24,  0xFF},//0x8C
-	{2, NodeType_Normal, 	VIRTUAL_BASS_CLASSIC,	"2:Music VB Classic",				24,  0xFF},//0x8D
-	{2, NodeType_Normal, 	THREE_D, 				"2:Music 3D",						24,  0xFF},//0x8E
-	{2, NodeType_Normal, 	EXCITER, 				"2:Music Exciter",					24,  0xFF},//0x8F
-	{2, NodeType_Normal, 	STEREO_WIDENER,			"2:Music Stereo Widener",			24,  0xFF},//0x90
-	{2, NodeType_DynamicEqGroup0_LP,	EQ,			"2:Music DynamicEQLP",				24,  0x91},//0x93
-	{2, NodeType_DynamicEqGroup0_HP,	EQ,			"2:Music DynamicEQHP",				24,  0x92},//0x94
-	{2, NodeType_DynamicEqGroup0,		DynamicEQ,	"2:Music Dynamic EQ",				24,  0xFF},//0x94
-	{2, NodeType_Normal, 	EQ,						"2:Music Pre EQ",					24,  0x94},//0x91
-	{2, NodeType_Normal, 	EQ_DRC,					"2:Music EQ_DRC",					24,  0x95},//0x92
-	{2, NodeType_Normal, 	EQ,						"2:Music EQ",						24,  0x96},//0x93
-	{2, NodeType_Normal, 	VOCAL_CUT,				"2:Music VOCAL_CUT",				24,  0x97},//0x94
+	{2, NodeType_Normal, 	EQ,						"2:Music Pre EQ",					24,  0x8C},//0x91
+	{2, NodeType_Normal, 	VIRTUAL_BASS, 			"2:Music VB",						24,  0x8D},//0x8C
+	{2, NodeType_Normal, 	VIRTUAL_BASS_CLASSIC,	"2:Music VB Classic",				24,  0x8E},//0x8D
+	//{2, NodeType_Normal, 	THREE_D, 				"2:Music 3D",						24,  0x8F},//0x8E
+	{2, NodeType_Normal, 	EXCITER, 				"2:Music Exciter",					24,  0x8F},//0x8F
+	//{2, NodeType_Normal, 	STEREO_WIDENER,			"2:Music Stereo Widener",			24,  0x90},//0x90
+	//{2, NodeType_DynamicEqGroup0_LP,	EQ,			"2:Music DynamicEQLP",				24,  0x91},//0x93
+	//{2, NodeType_DynamicEqGroup0_HP,	EQ,			"2:Music DynamicEQHP",				24,  0x92},//0x94
+	//{2, NodeType_DynamicEqGroup0,		DynamicEQ,	"2:Music Dynamic EQ",				24,  0x93},//0x94
+	{2, NodeType_Normal, 	EQ,						"2:Music EQ1",						24,  0x90},//0x93
+	{2, NodeType_Normal, 	EQ,						"2:Music EQ2",						24,  0x91},//0x93
+	{2, NodeType_Normal, 	EQ_DRC,					"2:Music EQ_DRC",					24,  0x92},//0x92
+	{2, NodeType_Normal, 	EQ,						"2:Music POST_EQ",					24,  0x93},//0x93
+	{2, NodeType_Normal, 	EQ_DRC,					"2:Music POST_DRC",				    24,  0x94},//0x92
 
-	
 	{1, NodeType_Normal, 	LOW_LEVEL_COMPRESSOR,	"3:Music DACX Low Level Compressor",24,  0xFF},//0x95
 	{1, NodeType_Normal, 	PHASE_CONTROL,			"3:Music DACX Phase Control",		24,  0xFF},//0x96
 	{1, NodeType_Normal, 	VIRTUAL_BASS,			"3:Music DACX VB",					24,  0xFF},//0x97

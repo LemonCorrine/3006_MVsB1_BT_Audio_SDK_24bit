@@ -34,24 +34,21 @@ typedef struct _AudioEffectCommParamBuffContext
 	SilenceDetectorParam		paramSilenceDetector_8;
 	CompanderParam		paramCompander_9;
 	LLCompressorParam		paramLLCompressor_10;
-	VBParam		paramVB_11;
-	VBClassicParam		paramVBClassic_12;
-	ThreeDParam		paramThreeD_13;
+	EQParam		paramEQ_11;
+	VBParam		paramVB_12;
+	VBClassicParam		paramVBClassic_13;
 	ExciterParam		paramExciter_14;
-	StereoWidenerParam		paramStereoWidener_15;
+	EQParam		paramEQ_15;
 	EQParam		paramEQ_16;
-	EQParam		paramEQ_17;
-	DynamicEqParam		paramDynamicEq_18;
-	EQParam		paramEQ_19;
-	EQDRCParam		paramEQDRC_20;
-	EQParam		paramEQ_21;
-	VocalCutParam		paramVocalCut_22;
-	LLCompressorParam		paramLLCompressor_23;
-	PhaseControlParam		paramPhaseControl_24;
-	VBParam		paramVB_25;
-	VBClassicParam		paramVBClassic_26;
-	EQDRCParam		paramEQDRC_27;
-	EQParam		paramEQ_28;
+	EQDRCParam		paramEQDRC_17;
+	EQParam		paramEQ_18;
+	EQDRCParam		paramEQDRC_19;
+	LLCompressorParam		paramLLCompressor_20;
+	PhaseControlParam		paramPhaseControl_21;
+	VBParam		paramVB_22;
+	VBClassicParam		paramVBClassic_23;
+	EQDRCParam		paramEQDRC_24;
+	EQParam		paramEQ_25;
 }AudioEffectCommParamBuffContext;
 
 typedef struct _AudioEffectAECParam_HFPBuffContext

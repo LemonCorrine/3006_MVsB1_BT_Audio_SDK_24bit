@@ -31,24 +31,21 @@ void AudioEffectParaminit(uint8_t* CommParam)
 		effect_list_param[8] = &gAudioEffectCommParamBuffVars.paramSilenceDetector_8;
 		effect_list_param[9] = &gAudioEffectCommParamBuffVars.paramCompander_9;
 		effect_list_param[10] = &gAudioEffectCommParamBuffVars.paramLLCompressor_10;
-		effect_list_param[11] = &gAudioEffectCommParamBuffVars.paramVB_11;
-		effect_list_param[12] = &gAudioEffectCommParamBuffVars.paramVBClassic_12;
-		effect_list_param[13] = &gAudioEffectCommParamBuffVars.paramThreeD_13;
+		effect_list_param[11] = &gAudioEffectCommParamBuffVars.paramEQ_11;
+		effect_list_param[12] = &gAudioEffectCommParamBuffVars.paramVB_12;
+		effect_list_param[13] = &gAudioEffectCommParamBuffVars.paramVBClassic_13;
 		effect_list_param[14] = &gAudioEffectCommParamBuffVars.paramExciter_14;
-		effect_list_param[15] = &gAudioEffectCommParamBuffVars.paramStereoWidener_15;
+		effect_list_param[15] = &gAudioEffectCommParamBuffVars.paramEQ_15;
 		effect_list_param[16] = &gAudioEffectCommParamBuffVars.paramEQ_16;
-		effect_list_param[17] = &gAudioEffectCommParamBuffVars.paramEQ_17;
-		effect_list_param[18] = &gAudioEffectCommParamBuffVars.paramDynamicEq_18;
-		effect_list_param[19] = &gAudioEffectCommParamBuffVars.paramEQ_19;
-		effect_list_param[20] = &gAudioEffectCommParamBuffVars.paramEQDRC_20;
-		effect_list_param[21] = &gAudioEffectCommParamBuffVars.paramEQ_21;
-		effect_list_param[22] = &gAudioEffectCommParamBuffVars.paramVocalCut_22;
-		effect_list_param[23] = &gAudioEffectCommParamBuffVars.paramLLCompressor_23;
-		effect_list_param[24] = &gAudioEffectCommParamBuffVars.paramPhaseControl_24;
-		effect_list_param[25] = &gAudioEffectCommParamBuffVars.paramVB_25;
-		effect_list_param[26] = &gAudioEffectCommParamBuffVars.paramVBClassic_26;
-		effect_list_param[27] = &gAudioEffectCommParamBuffVars.paramEQDRC_27;
-		effect_list_param[28] = &gAudioEffectCommParamBuffVars.paramEQ_28;
+		effect_list_param[17] = &gAudioEffectCommParamBuffVars.paramEQDRC_17;
+		effect_list_param[18] = &gAudioEffectCommParamBuffVars.paramEQ_18;
+		effect_list_param[19] = &gAudioEffectCommParamBuffVars.paramEQDRC_19;
+		effect_list_param[20] = &gAudioEffectCommParamBuffVars.paramLLCompressor_20;
+		effect_list_param[21] = &gAudioEffectCommParamBuffVars.paramPhaseControl_21;
+		effect_list_param[22] = &gAudioEffectCommParamBuffVars.paramVB_22;
+		effect_list_param[23] = &gAudioEffectCommParamBuffVars.paramVBClassic_23;
+		effect_list_param[24] = &gAudioEffectCommParamBuffVars.paramEQDRC_24;
+		effect_list_param[25] = &gAudioEffectCommParamBuffVars.paramEQ_25;
 
 	}
 	else if((EffectComCt*)CommParam == AudioEffectAECParam_HFP)
