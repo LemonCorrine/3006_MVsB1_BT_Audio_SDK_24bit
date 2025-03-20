@@ -1,5 +1,6 @@
 ;
 /source/
+/.vscode/
 ;
 /BT_Audio_APP/Release/
 /BT_Audio_APP/.settings/com.andestech.ide.flash.ui.prefs
@@ -102,3 +103,10 @@
 ;*.c
 ;*.h
 
+# BT_Audio_APP/tools/audioeffect_list_to_parameters_script/target_file/AECParam_HFP.c
+# BT_Audio_APP/tools/audioeffect_list_to_parameters_script/target_file/audio_effect_param.c
+# BT_Audio_APP/tools/audioeffect_list_to_parameters_script/target_file/audio_effect_param.h
+# BT_Audio_APP/tools/audioeffect_list_to_parameters_script/target_file/CommParam.c
+# BT_Audio_APP/tools/audioeffect_parameters_script/source_file/CommParam.ini
+# BT_Audio_APP/tools/audioeffect_parameters_script/source_file/CommParam.c
+# BT_Audio_APP/tools/audioeffect_parameters_script/target_file/CommParam.c
