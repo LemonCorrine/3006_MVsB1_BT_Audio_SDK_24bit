@@ -176,10 +176,7 @@ uint16_t SampleRateIndexGet(uint32_t SampleRate)
 			break;
 		}
 	}
-	if(i == 13)
-	{
-		i =0;
-	}
+	i = (i == 13) ? (0):(i);
 	return i;
 }
 //系统变量初始化

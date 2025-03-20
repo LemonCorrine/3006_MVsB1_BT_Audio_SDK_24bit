@@ -1,5 +1,6 @@
 ;
 /source/
+/.vscode/
 ;
 /BT_Audio_APP/Release/
 /BT_Audio_APP/.settings/com.andestech.ide.flash.ui.prefs

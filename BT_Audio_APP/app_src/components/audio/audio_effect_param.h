@@ -30,37 +30,37 @@ typedef struct _AudioEffectCommParamBuffContext
 	GainControlParam		paramGainControl_4;
 	GainControlParam		paramGainControl_5;
 	GainControlParam		paramGainControl_6;
-	ExpanderParam		paramExpander_7;
-	SilenceDetectorParam		paramSilenceDetector_8;
-	CompanderParam		paramCompander_9;
+	ExpanderParam			paramExpander_7;
+	SilenceDetectorParam	paramSilenceDetector_8;
+	CompanderParam			paramCompander_9;
 	LLCompressorParam		paramLLCompressor_10;
-	VBParam		paramVB_11;
-	VBClassicParam		paramVBClassic_12;
-	ThreeDParam		paramThreeD_13;
-	ExciterParam		paramExciter_14;
+	VBParam					paramVB_11;
+	VBClassicParam			paramVBClassic_12;
+	ThreeDParam				paramThreeD_13;
+	ExciterParam			paramExciter_14;
 	StereoWidenerParam		paramStereoWidener_15;
-	EQParam		paramEQ_16;
-	EQParam		paramEQ_17;
-	DynamicEqParam		paramDynamicEq_18;
-	EQParam		paramEQ_19;
-	EQDRCParam		paramEQDRC_20;
-	EQParam		paramEQ_21;
-	VocalCutParam		paramVocalCut_22;
+	EQParam					paramEQ_16;
+	EQParam					paramEQ_17;
+	DynamicEqParam			paramDynamicEq_18;
+	EQParam					paramEQ_19;
+	EQDRCParam				paramEQDRC_20;
+	EQParam					paramEQ_21;
+	VocalCutParam			paramVocalCut_22;
 	LLCompressorParam		paramLLCompressor_23;
 	PhaseControlParam		paramPhaseControl_24;
-	VBParam		paramVB_25;
-	VBClassicParam		paramVBClassic_26;
-	EQDRCParam		paramEQDRC_27;
-	EQParam		paramEQ_28;
+	VBParam					paramVB_25;
+	VBClassicParam			paramVBClassic_26;
+	EQDRCParam				paramEQDRC_27;
+	EQParam					paramEQ_28;
 }AudioEffectCommParamBuffContext;
 
 typedef struct _AudioEffectAECParam_HFPBuffContext
 {
-	ExpanderParam		paramExpander_0;
-	EQParam		paramEQ_1;
-	AECParam		paramAEC_2;
+	ExpanderParam			paramExpander_0;
+	EQParam					paramEQ_1;
+	AECParam				paramAEC_2;
 	GainControlParam		paramGainControl_3;
-	DRCParam		paramDRC_4;
+	DRCParam				paramDRC_4;
 }AudioEffectAECParam_HFPBuffContext;
 
 

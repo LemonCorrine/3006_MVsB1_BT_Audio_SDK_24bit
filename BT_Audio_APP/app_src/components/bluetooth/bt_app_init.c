@@ -222,7 +222,7 @@ void LoadBtConfigurationParams(void)
 		btStackConfigParams->ble_LocalDeviceAddr[5] |= 0xc0;
 	}
 
-#if 0
+#if 1
 	//BT name À¶ÑÀÃû³Æ°´ÕÕBT_NAME
 	strcpy((void *)btStackConfigParams->bt_LocalDeviceName, BT_NAME);
 #else

@@ -110,7 +110,7 @@
 
 
 //#define CFG_APP_HDMIIN_MODE_EN 		//-------HDMI IN模式---------------//
-#define CFG_APP_USB_AUDIO_MODE_EN		//-------USB声卡，读卡器，一线通功能---//
+//#define CFG_APP_USB_AUDIO_MODE_EN		//-------USB声卡，读卡器，一线通功能---//
 
 
 #if defined(CFG_APP_LINEIN_MODE_EN) || defined(CFG_FUNC_LINE_MIX_MODE)
