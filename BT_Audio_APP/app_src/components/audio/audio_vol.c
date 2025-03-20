@@ -236,6 +236,7 @@ uint8_t AudioMusicVolGet(void)
 
 void AudioMusicVolUp(void)
 {
+	bool flag = FALSE;
 	if(IsAudioPlayerMute() == TRUE)
 	{
 		HardWareMuteOrUnMute();
@@ -266,12 +267,17 @@ void AudioMusicVolUp(void)
 			#ifdef CFG_FUNC_BREAKPOINT_EN
 			BackupInfoUpdata(BACKUP_SYS_INFO);
 			#endif
+
+			flag = TRUE;
 		}
 
 		if (mainAppCt.MusicVolume >= CFG_PARA_MAX_VOLUME_NUM)
 		{
 			#ifdef CFG_FUNC_REMIND_SOUND_EN
-			RemindSoundServiceItemRequest(SOUND_REMIND_VOLMAX, REMIND_ATTR_NEED_MIX);
+            if(!RemindSoundIsPlay())
+            {			
+				RemindSoundServiceItemRequest(SOUND_REMIND_VOLMAX, REMIND_ATTR_NEED_MIX);
+			}
 			#endif
 		}
 	    mainAppCt.gSysVol.AudioSourceVol[APP_SOURCE_NUM] = mainAppCt.MusicVolume;
@@ -306,8 +312,9 @@ void AudioMusicVolUp(void)
 #ifdef CFG_APP_BT_MODE_EN
 #if (BT_AVRCP_VOLUME_SYNC == ENABLE)
 	//add volume sync(bluetooth play mode)
-	if(GetSystemMode() == ModeBtAudioPlay)
+	if((GetSystemMode() == ModeBtAudioPlay)&&(flag))
 	{
+		flag = FALSE;
 		MessageContext		msgSend;
 
 		SetBtSyncVolume(mainAppCt.gSysVol.AudioSourceVol[APP_SOURCE_NUM]);
